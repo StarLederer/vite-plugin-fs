@@ -44,7 +44,7 @@ export default {
 ```ts
 export interface Options {
   /**
-   * Port to serve the API at
+   * Port to serve the API at.
    *
    * @default 7070
    */
@@ -59,7 +59,10 @@ export interface Options {
 
   /**
    * Allow going above rootDir.
-   * Enabling this is really dangerous! Any request to the API will be able to read and modify files anywhere on your system. Indended for personal use only.
+   * Enabling this is really dangerous!
+   * Any request to the API will be able to read
+   * and modify files anywhere on your system.
+   * Indended for personal use only.
    *
    * @default false
    */
@@ -115,7 +118,7 @@ To execute fs.stat set the **command** querry to **stat**
 
 ```ts
 await fetch(`http://localhost:7070/path/to/somewhere?command=stat`);
-// if directory found, returns {type: 'stats', stats: {...RESULTS_OF fs.stat(), dir: RESULT OF fs.stat().isDirectory()}}
+// if file or directory found returns {type: 'stats', stats: {...RESULTS_OF fs.stat(), dir: RESULT OF fs.stat().isDirectory()}}
 ```
 
 ## Example of displaying contents of a directory with a recursive Vue component
