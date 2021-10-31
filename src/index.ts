@@ -1,4 +1,4 @@
-import type { Plugin } from 'vite';
+import type { Plugin, UserConfig } from 'vite';
 import startApi from './startApi';
 import { UserOptions, resolveOptions } from './Options';
 
@@ -10,13 +10,21 @@ function VitePluginFs(userOptiuons: UserOptions = {}): Plugin {
 
     apply: 'serve',
 
-    config: () => ({
-      server: {
-        proxy: {
-          '/_fs': `http://localhost:${options.port}`,
-        },
-      },
-    }),
+    config() {
+      const config: UserConfig = {};
+
+      if (options.proxy.enable) {
+        config.server = {};
+        config.server.proxy = {};
+        config.server.proxy[options.proxy.path] = {
+          target: `http://localhost:${options.port}`,
+          changeOrigin: true,
+          rewrite: (path) => path.substring(options.proxy.path.length),
+        };
+      }
+
+      return config;
+    },
 
     configResolved({ root }) {
       startApi(root, options);
