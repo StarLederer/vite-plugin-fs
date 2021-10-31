@@ -43,7 +43,7 @@ export default function startApi(rootDir: string, options: Options) {
   type SimpleDirent = { name: string; dir: boolean; };
   type DirResponse = {
     type: 'dir';
-    contents: string[] | SimpleDirent[];
+    items: string[] | SimpleDirent[];
   };
 
   type SimpleStats = Stats & { dir: boolean; };
@@ -83,23 +83,23 @@ export default function startApi(rootDir: string, options: Options) {
     detailed: boolean = false,
   ): Promise<DirResponse | null> {
     if (stats.isDirectory()) {
-      let contents: any[];
+      let items: any[];
       if (!detailed) {
-        contents = await fs.readdir(path);
+        items = await fs.readdir(path);
       } else {
         const dirents = await fs.readdir(path, { withFileTypes: true });
-        contents = [];
+        items = [];
         dirents.forEach((dirent) => {
           const simpleDirent: SimpleDirent = {
             name: dirent.name,
             dir: dirent.isDirectory(),
           };
-          if (dirent.isFile() || dirent.isDirectory()) { contents.push(simpleDirent); }
+          if (dirent.isFile() || dirent.isDirectory()) { items.push(simpleDirent); }
         });
       }
       return {
         type: 'dir',
-        contents,
+        items,
       };
     }
 
