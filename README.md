@@ -6,9 +6,7 @@
 
 Interact with fs by fetching requests from a local API.
 
-> !!!
-> This plugin is in early acces. Do not publish anything with this plugin in it, especially in SSR mode! SSR mode has not been tested.
-> !!!
+> This plugin is in early acces. Do not publish anything with this plugin in it, especially in SSR mode! SSR mode has not been tested!!!
 
 ## What's already working
 
