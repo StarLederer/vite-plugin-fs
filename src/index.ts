@@ -1,7 +1,10 @@
 import type { Plugin } from 'vite';
-import startAPI from './api';
+import startApi from './startApi';
+import { UserOptions, resolveOptions } from './Options';
 
-function VitePluginFs(this: any): Plugin {
+function VitePluginFs(userOptiuons: UserOptions = {}): Plugin {
+  const options = resolveOptions(userOptiuons);
+
   return {
     name: 'vite-plugin-fs',
 
@@ -10,13 +13,13 @@ function VitePluginFs(this: any): Plugin {
     config: () => ({
       server: {
         proxy: {
-          '/_fs': 'http://localhost:7070',
+          '/_fs': `http://localhost:${options.port}`,
         },
       },
     }),
 
     configResolved({ root }) {
-      startAPI({ rootDir: root });
+      startApi(root, options);
     },
 
     //   configureServer(server) {
