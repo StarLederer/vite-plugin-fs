@@ -44,6 +44,7 @@ export default {
 ```ts
 export interface Options {
   /**
+   * Port to serve the API at
    *
    * @default 7070
    */
@@ -91,7 +92,7 @@ Currently the API only accepts GET requests and returns results of fs.readFile f
 To read a file or dir
 
 ```ts
-await fetch(`http://localhost:7070/path/to/somewhere`)
+await fetch(`http://localhost:7070/path/to/somewhere`);
 // if file found, returns {type: 'file', data: RESULT OF fs.readFile(.../path/to/somewhere)}
 // if directory found, returns {type: 'dir', items: ['child1', 'child2'...]}
 ```
@@ -99,21 +100,21 @@ await fetch(`http://localhost:7070/path/to/somewhere`)
 To read a file set the **command** querry to **readfile**
 
 ```ts
-await fetch(`http://localhost:7070/path/to/somewhere?command=readfile`)
+await fetch(`http://localhost:7070/path/to/somewhere?command=readfile`);
 // if file found, returns {type: 'file', data: RESULT OF fs.readFile(.../path/to/somewhere)}
 ```
 
 To read a directory set the **command** querry to **readdir**
 
 ```ts
-await fetch(`http://localhost:7070/path/to/somewhere?command=readdir`)
+await fetch(`http://localhost:7070/path/to/somewhere?command=readdir`);
 // if directory found, returns {type: 'dir', items: ['child1', 'child2'...]}
 ```
 
 To execute fs.stat set the **command** querry to **stat**
 
 ```ts
-await fetch(`http://localhost:7070/path/to/somewhere?command=stat`)
+await fetch(`http://localhost:7070/path/to/somewhere?command=stat`);
 // if directory found, returns {type: 'stats', stats: {...RESULTS_OF fs.stat(), dir: RESULT OF fs.stat().isDirectory()}}
 ```
 
@@ -146,7 +147,7 @@ export default {
       });
 
     return {
-      children
+      children,
     };
   },
 };
@@ -156,7 +157,7 @@ export default {
   <li>
     <span>{{ dir }}</span>
     <ul>
-      <Dirent v-for="child in children" :dir="`${dir}/${child}`"/>
+      <Dirent v-for="child in children" :dir="`${dir}/${child}`" />
     </ul>
   </li>
 </template>
@@ -166,7 +167,7 @@ export default {
 <!-- App.vue -->
 
 <script>
-import Dirent from './components/Dirent.vue'
+import Dirent from "./components/Dirent.vue";
 </script>
 
 <template>
