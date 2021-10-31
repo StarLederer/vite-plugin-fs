@@ -1,5 +1,6 @@
 import * as fs from 'fs/promises';
 import { resolve } from 'path';
+import type { Stats } from 'fs';
 import express from 'express';
 import cors from 'cors';
 import { Options } from './Options';
@@ -31,43 +32,146 @@ export default function startApi(rootDir: string, options: Options) {
   //
   //
   // GET
+
+  // Response types
+
+  type FileResponse = {
+    type: 'file';
+    data: any;
+  };
+
+  type SimpleDirent = { name: string; dir: boolean; };
+  type DirResponse = {
+    type: 'dir';
+    contents: string[] | SimpleDirent[];
+  };
+
+  type SimpleStats = Stats & { dir: boolean; };
+  type StatResponse = {
+    type: 'stats';
+    stats: SimpleStats;
+  };
+
+  type ErrorResponse = {
+    type: 'error';
+    code: number;
+    message?: string;
+  };
+
+  type ApiResponse = FileResponse | DirResponse | StatResponse | ErrorResponse;
+
+  // Readers
+
+  async function readIfFile(
+    path: string,
+    stats: Stats,
+  ): Promise<FileResponse | null> {
+    if (stats.isFile()) {
+      const data = await fs.readFile(path);
+      return {
+        type: 'file',
+        data,
+      };
+    }
+
+    return null;
+  }
+
+  async function readIfDir(
+    path: string,
+    stats: Stats,
+    detailed: boolean = false,
+  ): Promise<DirResponse | null> {
+    if (stats.isDirectory()) {
+      let contents: any[];
+      if (!detailed) {
+        contents = await fs.readdir(path);
+      } else {
+        const dirents = await fs.readdir(path, { withFileTypes: true });
+        contents = [];
+        dirents.forEach((dirent) => {
+          const simpleDirent: SimpleDirent = {
+            name: dirent.name,
+            dir: dirent.isDirectory(),
+          };
+          if (dirent.isFile() || dirent.isDirectory()) { contents.push(simpleDirent); }
+        });
+      }
+      return {
+        type: 'dir',
+        contents,
+      };
+    }
+
+    return null;
+  }
+
+  async function statIfSupported(stats: Stats): Promise<StatResponse | null> {
+    if (stats.isFile() || stats.isDirectory()) {
+      const simpleStats: SimpleStats = {
+        ...stats,
+        dir: stats.isDirectory(),
+      };
+      return {
+        type: 'stats',
+        stats: simpleStats,
+      };
+    }
+
+    return null;
+  }
+
+  // Handler
+
   app.get('/*', async (req, res) => {
     const path = resolvePath(req.path);
 
-    // TODO: command query key
-    // * read (default)
-    // * readdir
-    // * read
-    // * stat
-
-    // No query keys
     try {
-      const stat = await fs.stat(path);
-      if (stat.isFile()) {
-        //
-        // Request leads to file
-        const data = await fs.readFile(path);
-        res.status(200).send({
-          type: 'file',
-          data,
-        });
-      } else if (stat.isDirectory()) {
-        //
-        // Request leads to directory
-        const contents = await fs.readdir(path);
-        res.status(200).send({
-          type: 'directory',
-          contents,
-        });
+      // Generate response
+      let response: ApiResponse | null = null;
+      const stats = await fs.stat(path);
+
+      // .../request?command=...
+      if (req.query.command) {
+        if (req.query.command === 'readfile') {
+          // readFile command
+          response = await readIfFile(path, stats);
+        } else if (req.query.command === 'readdir') {
+          // readdir command
+          response = await readIfDir(path, stats);
+        } else if (req.query.command === 'readdir-detailed') {
+          // readdir command
+          response = await readIfDir(path, stats, true);
+        } else if (req.query.command === 'stat') {
+          // stat command
+          response = await statIfSupported(stats);
+        } else {
+          // invalid command
+          response = {
+            type: 'error',
+            code: 500,
+            message: `Unknown command ${req.query.command}`,
+          };
+        }
       } else {
-        //
-        // Request leads to something else
-        // (which we don't want to deal with)
-        res.sendStatus(404);
+        // no command (try to read file and dir)
+        response = (await readIfFile(path, stats)) ?? (await readIfDir(path, stats));
+      }
+
+      // Check if response is null
+      if (response) {
+        // Check if response is an ErrorResponse
+        if (response.type !== 'error') {
+          res.status(200).send(response);
+        } else {
+          res.status(response.code).send(response.message);
+        }
+      } else {
+        // Response is null
+        res.sendStatus(500);
       }
     } catch (err: any) {
-      //
-      // Request leads nowhere
+      // Could not fs.stat() the path
       if (err.code === 'ENOENT') {
         res.sendStatus(404);
       } else {
@@ -112,8 +216,16 @@ export default function startApi(rootDir: string, options: Options) {
   app.listen(7070, () => {
     console.warn('\x1b[41m!!!');
     console.warn(`fs server is running on port ${options.port} and on /_fs`);
-    console.warn('Please be careful since any requests to this server can modify your actual file system');
-    console.warn(`Clamping to ${root} is ${options.goAboveRoot ? 'OFF! A DELETE request to ../ will wipe the parent of this directory!' : 'on. Everything outside this directory is safe'}`);
+    console.warn(
+      'Please be careful since any requests to this server can modify your actual file system',
+    );
+    console.warn(
+      `Clamping to ${root} is ${
+        options.goAboveRoot
+          ? 'OFF! A DELETE request to ../ will wipe the parent of this directory!'
+          : 'on. Everything outside this directory is safe'
+      }`,
+    );
     console.warn('!!!\x1b[0m');
   });
 }
