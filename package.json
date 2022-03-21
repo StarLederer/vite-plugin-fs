@@ -11,7 +11,9 @@
     }
   },
   "scripts": {
-    "dev": "npm run build -- --watch",
+    "prepack": "pnpm run build && cp .gitignore .npmignore && cat .npmpack >> .npmignore",
+    "postpack": "rm .npmignore",
+    "dev": "pnpm run build -- --watch",
     "build": "tsup src/index.ts --dts --format cjs,esm"
   },
   "engines": {
