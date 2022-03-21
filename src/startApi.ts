@@ -1,5 +1,5 @@
 import * as fs from 'fs/promises';
-import { resolve } from 'path';
+import { resolve, dirname } from 'path';
 import type { Stats } from 'fs';
 import express from 'express';
 import cors from 'cors';
@@ -182,20 +182,26 @@ export default function startApi(rootDir: string, options: Options) {
 
   // TODO: Implement these
 
-  // // POST request
-  // app.post('/*', async (req, res) => {
-  //   const filePath = path.resolve(config.rootDir + req.path);
-  //   const fileData = req.body;
+  // POST request
+  app.post('/*', async (req, res) => {
+    const path = resolvePath(req.path);
+    const dir = dirname(path);
+    const { data } = req.body;
 
-  //   try {
-  //     const file = fileManager.getFile(filePath);
-  //     await file.setField(fileData.key, fileData.value);
-  //   } catch (err) {
-  //     res.status(500).send();
-  //   }
+    try {
+      try {
+        await fs.mkdir(dir, { recursive: true });
+      } catch (err: any) {
+        // Couldn't mkdir, assume it exists
+      }
 
-  //   res.status(200).send();
-  // });
+      await fs.writeFile(path, data);
+      res.status(200).send();
+    } catch (err) {
+      // Couldn't writeFile
+      res.status(500).send();
+    }
+  });
 
   // // DELETE request
   // app.delete('/*', async (req, res) => {
@@ -220,10 +226,9 @@ export default function startApi(rootDir: string, options: Options) {
       'Please be careful since any requests to this server can modify your actual file system',
     );
     console.warn(
-      `Clamping to ${root} is ${
-        options.goAboveRoot
-          ? 'OFF! A DELETE request to ../ will wipe the parent of this directory!'
-          : 'on. Everything outside this directory is safe'
+      `Clamping to ${root} is ${options.goAboveRoot
+        ? 'OFF! A DELETE request to ../ will wipe the parent of this directory!'
+        : 'on. Everything outside this directory is safe'
       }`,
     );
     console.warn('!!!\x1b[0m');

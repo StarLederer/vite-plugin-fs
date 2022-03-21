@@ -20,11 +20,13 @@ var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 
 // src/startApi.ts
 import {
+  mkdir,
   readFile,
   readdir,
-  stat
+  stat,
+  writeFile
 } from "fs/promises";
-import { resolve } from "path";
+import { resolve, dirname } from "path";
 import express from "express";
 import cors from "cors";
 function startApi(rootDir, options) {
@@ -128,6 +130,21 @@ function startApi(rootDir, options) {
       } else {
         res.sendStatus(500);
       }
+    }
+  });
+  app.post("/*", async (req, res) => {
+    const path = resolvePath(req.path);
+    const dir = dirname(path);
+    const { data } = req.body;
+    try {
+      try {
+        await mkdir(dir, { recursive: true });
+      } catch (err) {
+      }
+      await writeFile(path, data);
+      res.status(200).send();
+    } catch (err) {
+      res.status(500).send();
     }
   });
   app.listen(7070, () => {
