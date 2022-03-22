@@ -6,6 +6,7 @@ import cors from 'koa-cors';
 
 import { Options } from '../Options';
 import get from './requests/get';
+import post from './requests/post';
 
 class FsServer {
   server: http.Server;
@@ -33,6 +34,7 @@ class FsServer {
     };
 
     app.use(get(resolvePath));
+    app.use(post(resolvePath));
 
     this.server = http.createServer(app.callback());
   }

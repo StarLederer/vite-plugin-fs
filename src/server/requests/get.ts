@@ -105,7 +105,6 @@ export default function createRoutes(resolvePath: (path: string) => string): Rou
 
   router.get(/.*/, async (ctx) => {
     const path = resolvePath(ctx.path);
-    // const path = resolvePath(req.path);
 
     try {
       // Generate response
@@ -145,25 +144,20 @@ export default function createRoutes(resolvePath: (path: string) => string): Rou
         if (response.type !== 'error') {
           ctx.status = 200;
           ctx.body = response;
-          // res.status(200).send(response);
         } else {
           ctx.status = response.code;
           ctx.body = response.message;
-          // res.status(response.code).send(response.message);
         }
       } else {
         // Response is null
         ctx.status = 500;
-        // res.sendStatus(500);
       }
     } catch (err: any) {
       // Could not fs.stat() the path
       if (err.code === 'ENOENT') {
         ctx.status = 404;
-        // res.sendStatus(404);
       } else {
         ctx.status = 500;
-        // res.sendStatus(500);
       }
     }
   });
