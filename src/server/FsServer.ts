@@ -1,12 +1,11 @@
-import * as fs from 'fs/promises';
 import * as http from 'http';
-import { resolve, dirname } from 'path';
+import { resolve } from 'path';
 import Koa from 'koa';
 import bodyParser from 'koa-bodyparser';
 import cors from 'koa-cors';
-import Router from 'koa-router';
 
-import { Options } from './Options';
+import { Options } from '../Options';
+import get from './requests/get';
 
 class FsServer {
   server: http.Server;
@@ -23,14 +22,17 @@ class FsServer {
     app.use(bodyParser());
     app.use(cors());
 
-    const router = new Router();
-    router.get('/', (ctx) => {
-      ctx.body = {
-        status: 'success',
-      };
-    });
+    const resolvePath = (path: string): string => {
+      if (this.options.goAboveRoot) {
+        return resolve(this.rootDir + path);
+      }
 
-    app.use(router.routes());
+      let p = resolve(this.rootDir + path);
+      if (!p.startsWith(this.rootDir)) p = this.rootDir;
+      return p;
+    };
+
+    app.use(get(resolvePath));
 
     this.server = http.createServer(app.callback());
   }
@@ -52,18 +54,8 @@ class FsServer {
     });
   }
 
-  stop() {
+  stop(): void {
     this.server.close();
-  }
-
-  private resolvePath(path: string): string {
-    if (this.options.goAboveRoot) {
-      return resolve(this.rootDir + path);
-    }
-
-    let p = resolve(this.rootDir + path);
-    if (!p.startsWith(this.rootDir)) p = this.rootDir;
-    return p;
   }
 }
 

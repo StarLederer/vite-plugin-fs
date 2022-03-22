@@ -1,5 +1,5 @@
 import type { Plugin, UserConfig } from 'vite';
-import FsServer from './FsServer';
+import FsServer from './server/FsServer';
 import { UserOptions, resolveOptions } from './Options';
 
 function VitePluginFs(userOptiuons: UserOptions = {}): Plugin {
