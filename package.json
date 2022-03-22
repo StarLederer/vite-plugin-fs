@@ -52,8 +52,6 @@
     "vite": "^2.8.6"
   },
   "dependencies": {
-    "cors": "^2.8.5",
-    "express": "^4.17.1",
     "koa": "^2.13.4",
     "koa-bodyparser": "^4.3.0",
     "koa-cors": "^0.0.16",
