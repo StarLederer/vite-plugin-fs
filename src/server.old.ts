@@ -5,22 +5,7 @@ import express from 'express';
 import cors from 'cors';
 import { Options } from './Options';
 
-export default function startApi(rootDir: string, options: Options) {
-  //
-  //
-  // Path resovler
-  const root = resolve(`${rootDir}/${options.rootDir}`);
-
-  function resolvePath(path: string): string {
-    if (options.goAboveRoot) {
-      return resolve(root + path);
-    }
-
-    let p = resolve(root + path);
-    if (!p.startsWith(root)) p = root;
-    return p;
-  }
-
+function start(rootDir: string, options: Options) {
   //
   //
   // Express
@@ -80,7 +65,7 @@ export default function startApi(rootDir: string, options: Options) {
   async function readIfDir(
     path: string,
     stats: Stats,
-    detailed: boolean = false,
+    detailed = false,
   ): Promise<DirResponse | null> {
     if (stats.isDirectory()) {
       let items: any[];
@@ -215,22 +200,6 @@ export default function startApi(rootDir: string, options: Options) {
   //     res.status(500).send();
   //   }
   // });
-
-  //
-  //
-  // Start
-  app.listen(7070, () => {
-    console.warn('\x1b[41m!!!');
-    console.warn(`fs server is running on port ${options.port} and on /_fs`);
-    console.warn(
-      'Please be careful since any requests to this server can modify your actual file system',
-    );
-    console.warn(
-      `Clamping to ${root} is ${options.goAboveRoot
-        ? 'OFF! A DELETE request to ../ will wipe the parent of this directory!'
-        : 'on. Everything outside this directory is safe'
-      }`,
-    );
-    console.warn('!!!\x1b[0m');
-  });
 }
+
+export default start;
