@@ -1,12 +1,24 @@
-.DS_Store
-node_modules
-dist-ssr
-TODOs.md
+# Logs
+logs
 *.log
-temp
-explorations
-.idea
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
 *.local
-/packages/vite/LICENSE
-*.cpuprofile
-/.vscode/
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

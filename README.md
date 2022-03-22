@@ -11,14 +11,13 @@ Interact with fs by fetching requests from a local API.
 ## What's already working
 
 - Fetching a GET requests to execute fs.reafFile fs.readdir and fs.stat
+- Fetching a POST request to execute fs.writeFile
 - Limiting of where API can go to protect your file system
 
 ## What's not working yet
 
-- POST and DELETE requests
+- DELETE request
 - Hot reloads
-- SSR support (potentially)
-- Authentication (potentially)
 
 ## Setup
 
@@ -119,6 +118,19 @@ To execute fs.stat set the **command** querry to **stat**
 ```ts
 await fetch(`http://localhost:7070/path/to/somewhere?command=stat`);
 // if file or directory found returns {type: 'stats', stats: {...RESULTS_OF fs.stat(), dir: RESULT OF fs.stat().isDirectory()}}
+```
+
+To write a file
+
+```ts
+await fetch(`http://localhost:7070/path/to/somewhere`,
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({data}),
+);
+// writes body.data to the file at the given path. Creates the parent directories if they don't already exist.
 ```
 
 ## Example of displaying contents of a directory with a recursive Vue component

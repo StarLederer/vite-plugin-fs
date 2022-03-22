@@ -152,6 +152,21 @@ function startApi(rootDir, options) {
       }
     }
   });
+  app.post("/*", async (req, res) => {
+    const path = resolvePath(req.path);
+    const dir = (0, import_path.dirname)(path);
+    const { data } = req.body;
+    try {
+      try {
+        await fs.mkdir(dir, { recursive: true });
+      } catch (err) {
+      }
+      await fs.writeFile(path, data);
+      res.status(200).send();
+    } catch (err) {
+      res.status(500).send();
+    }
+  });
   app.listen(7070, () => {
     console.warn("[41m!!!");
     console.warn(`fs server is running on port ${options.port} and on /_fs`);
