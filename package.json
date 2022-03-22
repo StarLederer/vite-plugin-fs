@@ -1,6 +1,6 @@
 {
   "name": "vite-plugin-fs",
-  "version": "0.1.4",
+  "version": "0.2.0",
   "description": "Interact with fs by fetching requests from a local API",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
