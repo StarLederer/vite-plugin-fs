@@ -6,7 +6,7 @@
 
 Interact with fs by fetching requests from a local API.
 
-> This plugin is in early acces. Do not publish anything with this plugin in it, especially in SSR mode! SSR mode has not been tested!!!
+> **New:** SSR and production builds have been somewhat tested. No signs of this plugin were found. This plugin is now somewhat safe to deploy.
 
 ## What's already working
 
@@ -17,9 +17,9 @@ Interact with fs by fetching requests from a local API.
 
 ## What is planned before v1.0.0
 
-- A JS abstaction of the api
-- Automated tests
-- Making sure the plugin is **definitely** not included in production and SSR builds
+- [ ] A node-fs-like abstaction of the api
+- [ ] Automated tests
+- [x] Checking that this plugin is not included in production and SSR builds
 
 ## Setup
 
