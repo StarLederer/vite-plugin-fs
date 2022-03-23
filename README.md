@@ -12,11 +12,14 @@ Interact with fs by fetching requests from a local API.
 
 - Fetching a GET requests to execute fs.reafFile fs.readdir and fs.stat
 - Fetching a POST request to execute fs.writeFile
+- Fetching a DELETE request to execute fs.rm
 - Limiting of where API can go to protect your file system
 
-## What's not working yet
+## What is planned before v1.0.0
 
-- DELETE request
+- A JS abstaction of the api
+- Automated tests
+- Making sure the plugin is **definitely** not included in production and SSR builds
 
 ## Setup
 
@@ -130,6 +133,16 @@ await fetch(`http://localhost:7070/path/to/somewhere`,
   body: JSON.stringify({data}),
 );
 // writes body.data to the file at the given path. Creates the parent directories if they don't already exist.
+```
+
+To delete a file
+
+```ts
+await fetch(`http://localhost:7070/path/to/somewhere`, method: 'DELETE',);
+// deletes the file or direcoty if it exists. Returns 500 if the path is not a file or an empty folder
+
+await fetch(`http://localhost:7070/path/to/somewhere?recursive=true&force=true`, method: 'DELETE');
+// deletes the file or direcoty if it exists. Also deletes non-empty directories. Similar to rm -rf
 ```
 
 ## Example of displaying contents of a directory with a recursive Vue component
