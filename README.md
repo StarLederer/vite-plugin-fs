@@ -4,7 +4,7 @@
 [![npm downloads][npm-downloads-src]][npm-downloads-href]
 [![License][license-src]][license-href]
 
-Interact with fs by fetching requests from a local API.
+Interact with fs by fetching requests to a local API.
 
 > **New:** SSR and production builds have been somewhat tested. No signs of this plugin were found. This plugin is now somewhat safe to deploy.
 
