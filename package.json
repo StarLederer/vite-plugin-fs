@@ -1,14 +1,24 @@
 {
   "name": "vite-plugin-fs",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Interact with fs by fetching requests from a local API",
-  "main": "./dist/index.js",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    "import": "./dist/index.js",
+    "require": "./dist/index.cjs",
+    "types": "./dist/index.d.ts"
+  },
   "type": "module",
   "scripts": {
     "prepack": "pnpm run build && cp .gitignore .npmignore && cat .npmpack >> .npmignore",
     "postpack": "rm .npmignore",
     "dev": "pnpm run build -- --watch",
-    "build": "tsup src/index.ts --dts --format esm"
+    "build": "tsup src/index.ts --dts --format esm,cjs --target=node14"
+  },
+  "engines": {
+    "node": ">=14"
   },
   "repository": {
     "type": "git",
