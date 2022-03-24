@@ -125,23 +125,23 @@ await fetch(`http://localhost:7070/path/to/somewhere?command=stat`);
 To write a file
 
 ```ts
-await fetch(`http://localhost:7070/path/to/somewhere`,
+await fetch(`http://localhost:7070/path/to/somewhere`, {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
   },
   body: JSON.stringify({data}),
-);
+});
 // writes body.data to the file at the given path. Creates the parent directories if they don't already exist.
 ```
 
 To delete a file
 
 ```ts
-await fetch(`http://localhost:7070/path/to/somewhere`, method: 'DELETE',);
+await fetch(`http://localhost:7070/path/to/somewhere`, { method: 'DELETE' });
 // deletes the file or direcoty if it exists. Returns 500 if the path is not a file or an empty folder
 
-await fetch(`http://localhost:7070/path/to/somewhere?recursive=true&force=true`, method: 'DELETE');
+await fetch(`http://localhost:7070/path/to/somewhere?recursive=true&force=true`, { method: 'DELETE' });
 // deletes the file or direcoty if it exists. Also deletes non-empty directories. Similar to rm -rf
 ```
 
