@@ -139,7 +139,7 @@ To write a file
 
 ```ts
 // Currently only strings are supported as the second argument
-const stats = await fs.writeFile('path/to/somewhere', 'File content');
+await fs.writeFile('path/to/somewhere', 'File content');
 ```
 
 To delete a file
