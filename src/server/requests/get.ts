@@ -31,6 +31,8 @@ type ErrorResponse = {
 
 type ApiResponse = FileResponse | DirResponse | StatResponse | ErrorResponse;
 
+export type { ApiResponse };
+
 //
 //
 // Main
