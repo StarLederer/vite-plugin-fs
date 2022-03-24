@@ -1,6 +1,5 @@
 import type { Plugin, UserConfig } from 'vite';
 import FsServer from './server/FsServer';
-import Abstraction from './abstraction';
 import { UserOptions, resolveOptions } from './Options';
 
 function VitePluginFs(userOptiuons: UserOptions = {}): Plugin {
@@ -41,4 +40,3 @@ function VitePluginFs(userOptiuons: UserOptions = {}): Plugin {
 }
 
 export default VitePluginFs;
-export { Abstraction as fs };

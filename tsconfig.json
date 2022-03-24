@@ -1,8 +1,7 @@
 {
-  "include": ["src"],
+  "include": ["src", "*.ts"],
   "exclude": ["node_modules", "**/*.spec.ts"],
   "compilerOptions": {
-    "outDir": "dist",
     "target": "ESNext",
     "module": "ESNext",
     "moduleResolution": "node",

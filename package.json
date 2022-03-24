@@ -2,20 +2,32 @@
   "name": "vite-plugin-fs",
   "version": "0.2.1",
   "description": "Interact with fs by fetching requests from a local API",
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "./lib/plugin/index.cjs",
+  "module": "./lib/plugin/index.js",
+  "types": "./lib/plugin/index.d.ts",
   "exports": {
-    "import": "./dist/index.js",
-    "require": "./dist/index.cjs",
-    "types": "./dist/index.d.ts"
+    ".": {
+      "import": "./lib/plugin/index.js",
+      "require": "./lib/plugin/index.cjs",
+      "types": "./lib/plugin/index.d.ts"
+    },
+    "./browser": {
+      "import": "./lib/abstraction/index.js",
+      "require": "./lib/abstraction/index.cjs",
+      "types": "./lib/abstraction/index.d.ts"
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "browser": ["./lib/abstraction/index.d.ts"]
+    }
   },
   "type": "module",
   "scripts": {
     "prepack": "pnpm run build && cp .gitignore .npmignore && cat .npmpack >> .npmignore",
     "postpack": "rm .npmignore",
     "dev": "pnpm run build -- --watch",
-    "build": "tsup src/index.ts --dts --format esm,cjs --target=node14"
+    "build": "tsup"
   },
   "engines": {
     "node": ">=14"

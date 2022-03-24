@@ -1,7 +1,4 @@
-import * as nodeFs from 'fs/promises';
-import { ApiResponse } from 'src/server/requests/get';
-
-// nodeFs.rm
+import { ApiResponse } from 'src/plugin/server/requests/get';
 
 const fs = {
   async read(path: string): Promise<ApiResponse> {
@@ -17,13 +14,13 @@ const fs = {
   },
 
   async readFile(path: string): Promise<ApiResponse> {
-    const res = await fetch(`http://localhost:7070/${path}?comman=readfile`);
+    const res = await fetch(`http://localhost:7070/${path}?command=readfile`);
     const data = await res.json() as ApiResponse;
     return data;
   },
 
   async stat(path: string): Promise<ApiResponse> {
-    const res = await fetch(`http://localhost:7070/${path}?comman=stat`);
+    const res = await fetch(`http://localhost:7070/${path}?command=stat`);
     const data = await res.json() as ApiResponse;
     return data;
   },
