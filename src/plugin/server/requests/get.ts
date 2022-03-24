@@ -1,37 +1,14 @@
 import * as fs from 'fs/promises';
 import type { Stats } from 'fs';
 import Router from 'koa-router';
-
-//
-//
-// Response types
-
-type FileResponse = {
-  type: 'file';
-  data: any;
-};
-
-type SimpleDirent = { name: string; dir: boolean; };
-type DirResponse = {
-  type: 'dir';
-  items: string[] | SimpleDirent[];
-};
-
-type SimpleStats = Stats & { dir: boolean; };
-type StatResponse = {
-  type: 'stats';
-  stats: SimpleStats;
-};
-
-type ErrorResponse = {
-  type: 'error';
-  code: number;
-  message?: string;
-};
-
-type ApiResponse = FileResponse | DirResponse | StatResponse | ErrorResponse;
-
-export type { ApiResponse };
+import type {
+  ApiResponse,
+  FileResponse,
+  DirResponse,
+  SimpleDirent,
+  SimpleStats,
+  StatResponse,
+} from 'src/common/ApiResponse';
 
 //
 //
@@ -131,7 +108,7 @@ export default function createRoutes(resolvePath: (path: string) => string): Rou
           // invalid command
           response = {
             type: 'error',
-            code: 500,
+            code: 400,
             message: `Unknown command ${ctx.query.command.toString()}`,
           };
         }
@@ -140,9 +117,9 @@ export default function createRoutes(resolvePath: (path: string) => string): Rou
         response = (await readIfFile(path, stats)) ?? (await readIfDir(path, stats));
       }
 
-      // Check if response is null
+      // Check if response is not null
       if (response) {
-        // Check if response is an ErrorResponse
+        // Check if response is not an ErrorResponse
         if (response.type !== 'error') {
           ctx.status = 200;
           ctx.body = response;

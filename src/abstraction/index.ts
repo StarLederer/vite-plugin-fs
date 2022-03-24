@@ -1,28 +1,85 @@
-import { ApiResponse } from 'src/plugin/server/requests/get';
+import type { ApiResponse } from 'src/common/ApiResponse';
+
+const error = {
+  relayError: 'Internal API on the relay server',
+  unknown: 'An error occurred while fetching to the relay server',
+};
 
 const fs = {
   async read(path: string): Promise<ApiResponse> {
     const res = await fetch(`http://localhost:7070/${path}`);
-    const data = await res.json() as ApiResponse;
-    return data;
+
+    if (res.status === 200) {
+      const data = await res.json() as ApiResponse;
+      return data;
+    }
+
+    if (res.status === 404) {
+      throw new Error(`File or directory ${path} not found`);
+    }
+
+    if (res.status === 500) {
+      throw new Error(error.relayError);
+    }
+
+    throw new Error(error.unknown);
   },
 
   async readdir(path: string): Promise<ApiResponse> {
     const res = await fetch(`http://localhost:7070/${path}?command=readdir`);
-    const data = await res.json() as ApiResponse;
-    return data;
+
+    if (res.status === 200) {
+      const data = await res.json() as ApiResponse;
+      return data;
+    }
+
+    if (res.status === 404) {
+      throw new Error(`Directory ${path} not found`);
+    }
+
+    if (res.status === 500) {
+      throw new Error(error.relayError);
+    }
+
+    throw new Error(error.unknown);
   },
 
   async readFile(path: string): Promise<ApiResponse> {
     const res = await fetch(`http://localhost:7070/${path}?command=readfile`);
-    const data = await res.json() as ApiResponse;
-    return data;
+
+    if (res.status === 200) {
+      const data = await res.json() as ApiResponse;
+      return data;
+    }
+
+    if (res.status === 404) {
+      throw new Error(`File ${path} not found`);
+    }
+
+    if (res.status === 500) {
+      throw new Error(error.relayError);
+    }
+
+    throw new Error(error.unknown);
   },
 
   async stat(path: string): Promise<ApiResponse> {
     const res = await fetch(`http://localhost:7070/${path}?command=stat`);
-    const data = await res.json() as ApiResponse;
-    return data;
+
+    if (res.status === 200) {
+      const data = await res.json() as ApiResponse;
+      return data;
+    }
+
+    if (res.status === 404) {
+      throw new Error(`File or directory ${path} not found`);
+    }
+
+    if (res.status === 500) {
+      throw new Error(error.relayError);
+    }
+
+    throw new Error(error.unknown);
   },
 
   async writeFile(path: string, data: string): Promise<void> {
@@ -36,9 +93,23 @@ const fs = {
   },
 
   async rm(path: string, options: { recursive: boolean; force: boolean }): Promise<void> {
-    await fetch(`http://localhost:7070/${path}${options.recursive ? 'recursive=true' : ''}${options.force ? 'force=true' : ''}`, {
+    const res = await fetch(`http://localhost:7070/${path}${options.recursive ? 'recursive=true' : ''}${options.force ? 'force=true' : ''}`, {
       method: 'DELETE',
     });
+
+    switch (res.status) {
+      case 200:
+        return;
+
+      case 404:
+        throw new Error(`File or directory ${path} not found`);
+
+      case 405:
+        throw new Error(`${path} is a directory. Directories can only be removed with the recursive option`);
+
+      default:
+        throw new Error(error.relayError);
+    }
   },
 };
 
