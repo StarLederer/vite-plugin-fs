@@ -6,25 +6,6 @@ const error = {
 };
 
 const fs = {
-  async read(path: string): Promise<ApiResponse> {
-    const res = await fetch(`http://localhost:7070/${path}`);
-
-    if (res.status === 200) {
-      const data = await res.json() as ApiResponse;
-      return data;
-    }
-
-    if (res.status === 404) {
-      throw new Error(`File or directory ${path} not found`);
-    }
-
-    if (res.status === 500) {
-      throw new Error(error.relayError);
-    }
-
-    throw new Error(error.unknown);
-  },
-
   async readdir(path: string): Promise<ApiResponse> {
     const res = await fetch(`http://localhost:7070/${path}?command=readdir`);
 
