@@ -1,13 +1,8 @@
 import * as fs from 'fs/promises';
-import type { Stats } from 'fs';
 import Router from 'koa-router';
 import type {
-  ApiResponse,
-  FileResponse,
-  DirResponse,
   SimpleDirent,
   SimpleStats,
-  StatResponse,
 } from 'src/common/ApiResponse';
 
 //
@@ -18,63 +13,48 @@ export default function createRoutes(resolvePath: (path: string) => string): Rou
   //
   // Readers
 
-  async function readIfFile(
+  async function readFile(
     path: string,
-    stats: Stats,
-  ): Promise<FileResponse | null> {
-    if (stats.isFile()) {
-      const data = await fs.readFile(path);
-      return {
-        type: 'file',
-        data,
-      };
-    }
-
-    return null;
+  ): Promise<Buffer> {
+    const data = await fs.readFile(path);
+    return data;
   }
 
-  async function readIfDir(
+  async function readdir(
     path: string,
-    stats: Stats,
-    detailed = false,
-  ): Promise<DirResponse | null> {
-    if (stats.isDirectory()) {
-      let items: any[];
-      if (!detailed) {
-        items = await fs.readdir(path);
-      } else {
-        const dirents = await fs.readdir(path, { withFileTypes: true });
-        items = [];
-        dirents.forEach((dirent) => {
-          const simpleDirent: SimpleDirent = {
-            name: dirent.name,
-            dir: dirent.isDirectory(),
-          };
-          if (dirent.isFile() || dirent.isDirectory()) { items.push(simpleDirent); }
-        });
-      }
-      return {
-        type: 'dir',
-        items,
-      };
+  ): Promise<SimpleDirent[]>;
+  async function readdir(
+    path: string,
+    withFileTypes?: boolean,
+  ): Promise<string[] | SimpleDirent[]> {
+    if (!withFileTypes) {
+      const items: string[] = await fs.readdir(path);
+      return items;
     }
 
-    return null;
+    const dirents = await fs.readdir(path, { withFileTypes: true });
+    const items: SimpleDirent[] = [];
+    dirents.forEach((dirent) => {
+      const simpleDirent: SimpleDirent = {
+        name: dirent.name,
+        dir: dirent.isDirectory(),
+      };
+      if (dirent.isFile() || dirent.isDirectory()) { items.push(simpleDirent); }
+    });
+    return items;
   }
 
-  function statIfSupported(stats: Stats): StatResponse | null {
+  async function stat(path: string): Promise<SimpleStats> {
+    const stats = await fs.stat(path);
     if (stats.isFile() || stats.isDirectory()) {
       const simpleStats: SimpleStats = {
         ...stats,
         dir: stats.isDirectory(),
       };
-      return {
-        type: 'stats',
-        stats: simpleStats,
-      };
+      return simpleStats;
     }
 
-    return null;
+    throw new Error();
   }
 
   //
@@ -85,60 +65,89 @@ export default function createRoutes(resolvePath: (path: string) => string): Rou
   router.get(/.*/, async (ctx) => {
     const path = resolvePath(ctx.path);
 
-    try {
-      // Generate response
-      let response: ApiResponse | null = null;
-      const stats = await fs.stat(path);
-
-      // .../request?command=...
-      if (ctx.query.command) {
-        if (ctx.query.command === 'readfile') {
-          // readFile command
-          response = await readIfFile(path, stats);
-        } else if (ctx.query.command === 'readdir') {
-          // readdir command
-          response = await readIfDir(path, stats);
-        } else if (ctx.query.command === 'readdir-detailed') {
-          // readdir command
-          response = await readIfDir(path, stats, true);
-        } else if (ctx.query.command === 'stat') {
-          // stat command
-          response = statIfSupported(stats);
-        } else {
-          // invalid command
-          response = {
-            type: 'error',
-            code: 400,
-            message: `Unknown command ${ctx.query.command.toString()}`,
-          };
-        }
-      } else {
-        // no command (try to read file and dir)
-        response = (await readIfFile(path, stats)) ?? (await readIfDir(path, stats));
-      }
-
-      // Check if response is not null
-      if (response) {
-        // Check if response is not an ErrorResponse
-        if (response.type !== 'error') {
+    // .../request?command=...
+    if (ctx.query.command) {
+      if (ctx.query.command === 'readFile') {
+        // readFile command
+        try {
+          const response = await readFile(path);
           ctx.status = 200;
           ctx.body = response;
-        } else {
-          ctx.status = response.code;
-          ctx.body = response.message;
+          return;
+        } catch (err: any) {
+          if (err.code === 'ENOENT') {
+            ctx.status = 404;
+            ctx.body = err.message;
+            return;
+          }
+
+          ctx.status = 400;
+          ctx.body = err.message;
+          return;
         }
-      } else {
-        // Response is null
-        ctx.status = 500;
       }
-    } catch (err: any) {
-      // Could not fs.stat() the path
-      if (err.code === 'ENOENT') {
-        ctx.status = 404;
-      } else {
-        ctx.status = 500;
+
+      if (ctx.query.command === 'readdir') {
+        if (ctx.query.withFileTypes) {
+        // readdir withFileTypes command
+          try {
+            const response = await readdir(path, true);
+            ctx.status = 200;
+            ctx.body = response;
+            return;
+          } catch (err: any) {
+            if (err.code === 'ENOENT') {
+              ctx.status = 404;
+              return;
+            }
+
+            ctx.status = 400;
+            ctx.body = err.message;
+            return;
+          }
+        } else {
+          // readdir command
+          try {
+            const response = await readdir(path);
+            ctx.status = 200;
+            ctx.body = response;
+            return;
+          } catch (err: any) {
+            if (err.code === 'ENOENT') {
+              ctx.status = 404;
+              return;
+            }
+            ctx.status = 400;
+            ctx.body = err.message;
+            return;
+          }
+        }
       }
+
+      if (ctx.query.command === 'stat') {
+        try {
+          // stat command
+          const response = await stat(path);
+          ctx.status = 200;
+          ctx.body = response;
+          return;
+        } catch (err: any) {
+          if (err.code === 'ENOENT') {
+            ctx.status = 404;
+            return;
+          }
+          ctx.status = 400;
+          ctx.body = err.message;
+        }
+      }
+    } else {
+      ctx.status = 400;
+      ctx.body = 'Command query param not specified';
+      return;
     }
+
+    ctx.status = 500;
+    ctx.body = 'Relay server error';
   });
 
   return router.routes();

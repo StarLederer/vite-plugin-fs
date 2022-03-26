@@ -1,4 +1,4 @@
-import type { ApiResponse } from 'src/common/ApiResponse';
+import type { SimpleDirent, SimpleStats } from 'src/common/ApiResponse';
 
 const error = {
   relayError: 'Internal API on the relay server',
@@ -6,11 +6,11 @@ const error = {
 };
 
 const fs = {
-  async readdir(path: string): Promise<ApiResponse> {
+  async readdir(path: string): Promise<SimpleDirent> {
     const res = await fetch(`http://localhost:7070/${path}?command=readdir`);
 
     if (res.status === 200) {
-      const data = await res.json() as ApiResponse;
+      const data = await res.json() as SimpleDirent;
       return data;
     }
 
@@ -25,11 +25,11 @@ const fs = {
     throw new Error(error.unknown);
   },
 
-  async readFile(path: string): Promise<ApiResponse> {
+  async readFile(path: string): Promise<Buffer> {
     const res = await fetch(`http://localhost:7070/${path}?command=readfile`);
 
     if (res.status === 200) {
-      const data = await res.json() as ApiResponse;
+      const data = await res.json() as Buffer;
       return data;
     }
 
@@ -44,11 +44,11 @@ const fs = {
     throw new Error(error.unknown);
   },
 
-  async stat(path: string): Promise<ApiResponse> {
+  async stat(path: string): Promise<SimpleStats> {
     const res = await fetch(`http://localhost:7070/${path}?command=stat`);
 
     if (res.status === 200) {
-      const data = await res.json() as ApiResponse;
+      const data = await res.json() as SimpleStats;
       return data;
     }
 
