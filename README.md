@@ -110,13 +110,6 @@ Import the abstraction API in your browser code
 </script>
 ```
 
-To read a file or directory
-
-```ts
-// This does not exist in node fs and might be removed
-const dirOrFile = await fs.read('path/to/somewhere');
-```
-
 To read a file
 
 ```ts
