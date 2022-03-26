@@ -151,33 +151,22 @@ await fs.rm('path/to/somewhere', { recursive: true });
 
 This is a more direct way to interact with the relay server, however, it is inconvenient, error-prone and there is no type checking. While this method is documented, it is not recommended to use and the docs for it might get removed. The API for network requests might also change a lot, unlike the abstraction API that will always act as much like node fs as possible.
 
-To read a file or directory
+To read a file
 
 ```ts
-await fetch(`http://localhost:7070/path/to/somewhere`);
-// if file found, returns {type: 'file', data: RESULT OF fs.readFile(.../path/to/somewhere)}
-// if directory found, returns {type: 'dir', items: ['child1', 'child2'...]}
+await fetch(`http://localhost:7070/path/to/somewhere?command=readFile`);
 ```
 
-To read a file set the **command** querry to **readfile**
-
-```ts
-await fetch(`http://localhost:7070/path/to/somewhere?command=readfile`);
-// if file found, returns {type: 'file', data: RESULT OF fs.readFile(.../path/to/somewhere)}
-```
-
-To read a directory set the **command** querry to **readdir**
+To read a directory
 
 ```ts
 await fetch(`http://localhost:7070/path/to/somewhere?command=readdir`);
-// if directory found, returns {type: 'dir', items: ['child1', 'child2'...]}
 ```
 
-To execute fs.stat set the **command** querry to **stat**
+To execute fs.stat
 
 ```ts
 await fetch(`http://localhost:7070/path/to/somewhere?command=stat`);
-// if file or directory found returns {type: 'stats', stats: {...RESULTS_OF fs.stat(), dir: RESULT OF fs.stat().isDirectory()}}
 ```
 
 To write a file
