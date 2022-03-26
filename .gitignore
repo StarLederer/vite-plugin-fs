@@ -12,6 +12,8 @@ dist
 lib
 dist-ssr
 *.local
+coverage
+__tests__/assets/newdirectory
 
 # Editor directories and files
 .vscode/*

@@ -6,9 +6,9 @@
 
 Interact with fs by fetching requests to a local API.
 
-> **New:** A convenient abstraction has been implemented. Check out new docs below.
+> **New:** Everything planned before v1.0.0 has been implemented. Release candidate is ready.
 
-> **New:** SSR and production builds have been somewhat tested. No signs of this plugin were found. This plugin is now somewhat safe to deploy.
+> **New:** A convenient abstraction has been implemented. Check out new docs below.
 
 ## What's already working
 
@@ -20,8 +20,9 @@ Interact with fs by fetching requests to a local API.
 ## What is planned before v1.0.0
 
 - [x] A node-fs-like abstaction of the api
-- [ ] Automated tests
+- [x] Automated tests
 - [x] Checking that this plugin is not included in production and SSR builds
+- [ ] No Typescript errors
 
 ## Setup
 
