@@ -3,7 +3,7 @@ import Router from 'koa-router';
 import type {
   SimpleDirent,
   SimpleStats,
-} from 'src/common/ApiResponse';
+} from 'src/common/ApiResponses';
 
 //
 //
