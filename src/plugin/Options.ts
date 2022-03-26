@@ -8,6 +8,7 @@ interface UserOptions {
   };
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface Options extends Required<UserOptions> {}
 
 const defaultOptions: Options = {

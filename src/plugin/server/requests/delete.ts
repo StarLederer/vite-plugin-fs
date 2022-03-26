@@ -1,5 +1,4 @@
 import * as fs from 'fs/promises';
-import { dirname } from 'path';
 import Router from 'koa-router';
 
 //
@@ -14,7 +13,6 @@ export default function createRoutes(resolvePath: (path: string) => string): Rou
 
   router.delete(/.*/, async (ctx) => {
     const path = resolvePath(ctx.path);
-    const dir = dirname(path);
 
     let recursive = false;
     let force = false;
@@ -29,9 +27,15 @@ export default function createRoutes(resolvePath: (path: string) => string): Rou
       if (err.code === 'ENOENT') {
         // File doesn't exist
         ctx.status = 404;
+      } else if (err.code === 'ERR_FS_EISDIR') {
+        // Tried ro rm a directory
+        ctx.status = 400;
       } else {
+        // Unknown error
         ctx.status = 500;
       }
+
+      ctx.body = err.message;
     }
   });
 

@@ -6,6 +6,8 @@
 
 Interact with fs by fetching requests to a local API.
 
+> **New:** A convenient abstraction has been implemented. Check out new docs below.
+
 > **New:** SSR and production builds have been somewhat tested. No signs of this plugin were found. This plugin is now somewhat safe to deploy.
 
 ## What's already working
@@ -17,7 +19,7 @@ Interact with fs by fetching requests to a local API.
 
 ## What is planned before v1.0.0
 
-- [ ] A node-fs-like abstaction of the api
+- [x] A node-fs-like abstaction of the api
 - [ ] Automated tests
 - [x] Checking that this plugin is not included in production and SSR builds
 
@@ -89,11 +91,74 @@ export interface Options {
 
 ## Usage
 
-API is only included in the serve mode. At build time the plugin does nothing. SSR has not been tested, so DO NOT USE THIS PLUGIN IS SSR MODE.
+The relay server only works in dev mode but the abstraction module can still be included in production, it is up to you to ensure it is not. There is no significant consequewnces to inclusing the abstractions layer in production since it will just make requests to a an inactive API endpoint, however, it is unnecessary code that should not be shipped to users.
 
-Currently the API only accepts GET requests and returns results of fs.readFile fs.readdir and fs.stat functions, but there are plans to implement POST and DELETE requests to create, modify and delete files in the near future. The API only supports files and directories. Other types of file system elements will result in 404 exceptions.
+This plugin runs a relay server that allows the browser to communicate with node. There are two ways to interact with the relay server:
 
-To read a file or dir
+- use the abstraction API (**recommended**),
+- fetch network requests (low level, might change).
+
+### Abstraction API
+
+The abstraction API is designed to act as much like node fs as possible.
+
+Import the abstraction API in your browser code
+
+```vue
+<script>
+  import fs from "vite-plugin-fs/browser";
+</script>
+```
+
+To read a file or directory
+
+```ts
+// This does not exist in node fs and might be removed
+const dirOrFile = await fs.read('path/to/somewhere');
+```
+
+To read a file
+
+```ts
+const file = await fs.readFile('path/to/somewhere');
+```
+
+To read a directory
+
+```ts
+const dir = await fs.readdir('path/to/somewhere');
+```
+
+To stat a path
+
+```ts
+const stats = await fs.stat('path/to/somewhere');
+```
+
+To write a file
+
+```ts
+// Currently only strings are supported as the second argument
+await fs.writeFile('path/to/somewhere', 'File content');
+```
+
+To delete a file
+
+```ts
+await fs.rm('path/to/somewhere');
+```
+
+To delete a file or directory
+
+```ts
+await fs.rm('path/to/somewhere', { recursive: true });
+```
+
+### Network requests
+
+This is a more direct way to interact with the relay server, however, it is inconvenient, error-prone and there is no type checking. While this method is documented, it is not recommended to use and the docs for it might get removed. The API for network requests might also change a lot, unlike the abstraction API that will always act as much like node fs as possible.
+
+To read a file or directory
 
 ```ts
 await fetch(`http://localhost:7070/path/to/somewhere`);
@@ -125,23 +190,23 @@ await fetch(`http://localhost:7070/path/to/somewhere?command=stat`);
 To write a file
 
 ```ts
-await fetch(`http://localhost:7070/path/to/somewhere`,
+await fetch(`http://localhost:7070/path/to/somewhere`, {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
   },
   body: JSON.stringify({data}),
-);
+});
 // writes body.data to the file at the given path. Creates the parent directories if they don't already exist.
 ```
 
 To delete a file
 
 ```ts
-await fetch(`http://localhost:7070/path/to/somewhere`, method: 'DELETE',);
+await fetch(`http://localhost:7070/path/to/somewhere`, { method: 'DELETE' });
 // deletes the file or direcoty if it exists. Returns 500 if the path is not a file or an empty folder
 
-await fetch(`http://localhost:7070/path/to/somewhere?recursive=true&force=true`, method: 'DELETE');
+await fetch(`http://localhost:7070/path/to/somewhere?recursive=true&force=true`, { method: 'DELETE' });
 // deletes the file or direcoty if it exists. Also deletes non-empty directories. Similar to rm -rf
 ```
 
