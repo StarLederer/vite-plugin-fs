@@ -22,9 +22,6 @@ export default function createRoutes(resolvePath: (path: string) => string): Rou
 
   async function readdir(
     path: string,
-  ): Promise<SimpleDirent[]>;
-  async function readdir(
-    path: string,
     withFileTypes?: boolean,
   ): Promise<string[] | SimpleDirent[]> {
     if (!withFileTypes) {
@@ -91,7 +88,7 @@ export default function createRoutes(resolvePath: (path: string) => string): Rou
         if (ctx.query.withFileTypes) {
         // readdir withFileTypes command
           try {
-            const response = await readdir(path, true);
+            const response = (await readdir(path, true)) as SimpleDirent[];
             ctx.status = 200;
             ctx.body = response;
             return;
