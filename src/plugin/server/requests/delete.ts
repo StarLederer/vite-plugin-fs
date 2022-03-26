@@ -1,6 +1,5 @@
 import * as fs from 'fs/promises';
 import Router from 'koa-router';
-import instanceOfNodeError from 'src/common/instanceofNodeError';
 
 //
 //
@@ -24,20 +23,19 @@ export default function createRoutes(resolvePath: (path: string) => string): Rou
       await fs.rm(path, { recursive, force });
       ctx.status = 200;
     } catch (err: any) {
-      console.log(err);
-      if (instanceOfNodeError(err, TypeError)) {
-        // Couldn't rm
-        if (err.code === 'ENOENT') {
-          // File doesn't exist
-          ctx.status = 404;
-        } else if (err.code === 'ERR_FS_EISDIR') {
-          // Tried ro rm a directory
-          ctx.status = 405;
-        } else {
-          // Unknown error
-          ctx.status = 500;
-        }
+      // Couldn't rm
+      if (err.code === 'ENOENT') {
+        // File doesn't exist
+        ctx.status = 404;
+      } else if (err.code === 'ERR_FS_EISDIR') {
+        // Tried ro rm a directory
+        ctx.status = 400;
+      } else {
+        // Unknown error
+        ctx.status = 500;
       }
+
+      ctx.body = err.message;
     }
   });
 
