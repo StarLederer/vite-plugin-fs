@@ -1,9 +1,4 @@
-import type { SimpleDirent, SimpleStats } from 'src/common/ApiResponse';
-
-const error = {
-  relayError: 'Internal API on the relay server',
-  unknown: 'An error occurred while fetching to the relay server',
-};
+import type { SimpleDirent, SimpleStats } from 'src/common/ApiResponses';
 
 const fs = {
   async readdir(path: string): Promise<SimpleDirent> {
@@ -14,34 +9,18 @@ const fs = {
       return data;
     }
 
-    if (res.status === 404) {
-      throw new Error(`Directory ${path} not found`);
-    }
-
-    if (res.status === 500) {
-      throw new Error(error.relayError);
-    }
-
-    throw new Error(error.unknown);
+    throw new Error(await res.text());
   },
 
-  async readFile(path: string): Promise<Buffer> {
-    const res = await fetch(`http://localhost:7070/${path}?command=readfile`);
+  async readFile(path: string): Promise<string> {
+    const res = await fetch(`http://localhost:7070/${path}?command=readFile`);
 
     if (res.status === 200) {
-      const data = await res.json() as Buffer;
+      const data = await res.text();
       return data;
     }
 
-    if (res.status === 404) {
-      throw new Error(`File ${path} not found`);
-    }
-
-    if (res.status === 500) {
-      throw new Error(error.relayError);
-    }
-
-    throw new Error(error.unknown);
+    throw new Error(await res.text());
   },
 
   async stat(path: string): Promise<SimpleStats> {
@@ -52,15 +31,7 @@ const fs = {
       return data;
     }
 
-    if (res.status === 404) {
-      throw new Error(`File or directory ${path} not found`);
-    }
-
-    if (res.status === 500) {
-      throw new Error(error.relayError);
-    }
-
-    throw new Error(error.unknown);
+    throw new Error(await res.text());
   },
 
   async writeFile(path: string, data: string): Promise<void> {
@@ -73,24 +44,16 @@ const fs = {
     });
   },
 
-  async rm(path: string, options: { recursive: boolean; force: boolean }): Promise<void> {
-    const res = await fetch(`http://localhost:7070/${path}${options.recursive ? 'recursive=true' : ''}${options.force ? 'force=true' : ''}`, {
+  async rm(path: string, options: { recursive: boolean }): Promise<void> {
+    const res = await fetch(`http://localhost:7070/${path}${options?.recursive ? '?recursive=true' : ''}`, {
       method: 'DELETE',
     });
 
-    switch (res.status) {
-      case 200:
-        return;
-
-      case 404:
-        throw new Error(`File or directory ${path} not found`);
-
-      case 405:
-        throw new Error(`${path} is a directory. Directories can only be removed with the recursive option`);
-
-      default:
-        throw new Error(error.relayError);
+    if (res.status === 200) {
+      return;
     }
+
+    throw new Error(await res.text());
   },
 };
 
