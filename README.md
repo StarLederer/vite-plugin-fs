@@ -23,6 +23,8 @@ Interact with fs by fetching requests to a local API.
 - [x] Automated tests
 - [x] Checking that this plugin is not included in production and SSR builds
 - [x] No Typescript errors
+- [ ] All config options actually work
+- [ ] Taken port error handling
 
 ## Setup
 
