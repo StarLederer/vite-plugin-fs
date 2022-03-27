@@ -2,10 +2,10 @@ name: Test
 
 on:
   pull_request:
-    branches: [ develop ]
+    branches: [develop]
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -13,6 +13,9 @@ jobs:
         with:
           node-version: 16
       - uses: pnpm/action-setup@v2
+        with:
+          version: 6.32.3
       - run: pnpm install
       - run: pnpm test
+      - run: pnpm eslint .
       - run: pnpm build
