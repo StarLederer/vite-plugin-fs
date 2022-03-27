@@ -1,6 +1,6 @@
 import * as fs from 'fs/promises';
 import Router from 'koa-router';
-import isNodeError from 'src/common/isNodeError';
+import isNodeError from '../../../common/isNodeError';
 
 //
 //

@@ -3,8 +3,8 @@ import Router from 'koa-router';
 import type {
   SimpleDirent,
   SimpleStats,
-} from 'src/common/ApiResponses';
-import isNodeError from 'src/common/isNodeError';
+} from '../../../common/ApiResponses';
+import isNodeError from '../../../common/isNodeError';
 
 //
 //
