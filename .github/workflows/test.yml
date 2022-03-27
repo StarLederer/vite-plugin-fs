@@ -13,6 +13,8 @@ jobs:
         with:
           node-version: 16
       - uses: pnpm/action-setup@v2
+        with:
+          version: 6.32.3
       - run: pnpm install
       - run: pnpm test
       - run: pnpm eslint .
