@@ -19,7 +19,9 @@
   },
   "typesVersions": {
     "*": {
-      "browser": ["./lib/abstraction/index.d.ts"]
+      "browser": [
+        "./lib/abstraction/index.d.ts"
+      ]
     }
   },
   "type": "module",
@@ -27,7 +29,8 @@
     "prepack": "pnpm run build && cp .gitignore .npmignore && cat .npmpack >> .npmignore",
     "postpack": "rm .npmignore",
     "dev": "pnpm run build -- --watch",
-    "build": "tsup"
+    "build": "tsup",
+    "test": "jest"
   },
   "engines": {
     "node": ">=14"
@@ -57,26 +60,32 @@
   "devDependencies": {
     "@types/cors": "^2.8.12",
     "@types/express": "^4.17.13",
+    "@types/jest": "^27.4.1",
     "@types/koa": "^2.13.4",
     "@types/koa-bodyparser": "^4.3.7",
-    "@types/koa-cors": "^0.0.2",
     "@types/koa-router": "^7.4.4",
+    "@types/koa__cors": "^3.1.1",
+    "@types/node-fetch": "^2.6.1",
     "@typescript-eslint/eslint-plugin": "^4.33.0",
     "@typescript-eslint/parser": "^4.33.0",
     "eslint": "7.32.0",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-config-airbnb-typescript": "^14.0.1",
     "eslint-plugin-import": "^2.25.2",
+    "jest": "^27.5.1",
+    "node-fetch": "2",
     "rimraf": "^3.0.2",
     "rollup": "^2.58.3",
+    "supertest": "^6.2.2",
+    "ts-jest": "^27.1.4",
     "tsup": "^5.5.0",
     "typescript": "^4.4.4",
     "vite": "^2.8.6"
   },
   "dependencies": {
+    "@koa/cors": "^3.2.0",
     "koa": "^2.13.4",
     "koa-bodyparser": "^4.3.0",
-    "koa-cors": "^0.0.16",
     "koa-router": "^10.1.1"
   }
 }

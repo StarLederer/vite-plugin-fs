@@ -1,6 +1,7 @@
 import * as fs from 'fs/promises';
 import { dirname } from 'path';
 import Router from 'koa-router';
+import isNodeError from '../../../common/isNodeError';
 
 //
 //
@@ -13,14 +14,28 @@ export default function createRoutes(resolvePath: (path: string) => string): Rou
   const router = new Router();
 
   router.post(/.*/, async (ctx) => {
-    const path = resolvePath(ctx.path);
+    ctx.status = 500;
+    ctx.body = 'Relay server error';
+
+    let path;
+    try {
+      path = resolvePath(ctx.path);
+    } catch (err) {
+      if (isNodeError(err)) {
+        ctx.status = 403;
+        ctx.body = err.message;
+      }
+      return;
+    }
+
     const dir = dirname(path);
-    const data = ctx.request.body.data ?? '';
+    const b = ctx.request.body as { data: '' };
+    const { data } = b;
 
     try {
       try {
         await fs.mkdir(dir, { recursive: true });
-      } catch (err: any) {
+      } catch (err) {
         // Couldn't mkdir, assume it exists
       }
 
