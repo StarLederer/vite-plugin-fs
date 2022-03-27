@@ -1,8 +1,8 @@
 import type { SimpleDirent, SimpleStats } from 'src/common/ApiResponses';
 
 const fs = {
-  async readdir(path: string): Promise<SimpleDirent> {
-    const res = await fetch(`http://localhost:7070/${path}?command=readdir`);
+  async readdir(path: string, withFileTypes?: boolean): Promise<SimpleDirent> {
+    const res = await fetch(`http://localhost:7070/${path}?command=readdir${withFileTypes ? '&withFileTypes=true' : ''}`);
 
     if (res.status === 200) {
       const data = await res.json() as SimpleDirent;
@@ -44,7 +44,7 @@ const fs = {
     });
   },
 
-  async rm(path: string, options: { recursive: boolean }): Promise<void> {
+  async rm(path: string, options?: { recursive: boolean }): Promise<void> {
     const res = await fetch(`http://localhost:7070/${path}${options?.recursive ? '?recursive=true' : ''}`, {
       method: 'DELETE',
     });
