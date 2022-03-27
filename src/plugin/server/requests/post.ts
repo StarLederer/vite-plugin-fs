@@ -13,7 +13,15 @@ export default function createRoutes(resolvePath: (path: string) => string): Rou
   const router = new Router();
 
   router.post(/.*/, async (ctx) => {
-    const path = resolvePath(ctx.path);
+    let path;
+    try {
+      path = resolvePath(ctx.path);
+    } catch (err: any) {
+      ctx.status = 403;
+      ctx.body = err.message;
+      return;
+    }
+
     const dir = dirname(path);
     const data = ctx.request.body.data ?? '';
 

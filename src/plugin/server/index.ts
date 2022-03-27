@@ -24,19 +24,9 @@ class FsServer {
     app.use(bodyParser());
     app.use(cors());
 
-    const resolvePath = (path: string): string => {
-      if (this.options.goAboveRoot) {
-        return resolve(this.rootDir + path);
-      }
-
-      let p = resolve(this.rootDir + path);
-      if (!p.startsWith(this.rootDir)) p = this.rootDir;
-      return p;
-    };
-
-    app.use(get(resolvePath));
-    app.use(post(resolvePath));
-    app.use(del(resolvePath));
+    app.use(get(this.resolvePath));
+    app.use(post(this.resolvePath));
+    app.use(del(this.resolvePath));
 
     this.server = http.createServer(app.callback());
   }
@@ -68,6 +58,24 @@ class FsServer {
   stop(): void {
     this.server.close();
   }
+
+  resolvePath = (path: string): string => {
+    let cleanPath = path;
+    while (cleanPath.length > 0 && cleanPath.startsWith('/')) {
+      cleanPath = cleanPath.substring(1);
+    }
+
+    if (this.options.goAboveRoot) {
+      return resolve(this.rootDir, cleanPath);
+    }
+
+    const p = resolve(this.rootDir, cleanPath);
+    if (!p.startsWith(this.rootDir)) {
+      throw new Error('ABOVEROOT');
+    } else {
+      return p;
+    }
+  };
 }
 
 export default FsServer;
