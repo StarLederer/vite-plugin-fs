@@ -4,6 +4,7 @@ import type {
   SimpleDirent,
   SimpleStats,
 } from 'src/common/ApiResponses';
+import isNodeError from 'src/common/isNodeError';
 
 //
 //
@@ -60,12 +61,17 @@ export default function createRoutes(resolvePath: (path: string) => string): Rou
   const router = new Router();
 
   router.get(/.*/, async (ctx) => {
+    ctx.status = 500;
+    ctx.body = 'Relay server error';
+
     let path;
     try {
       path = resolvePath(ctx.path);
-    } catch (err: any) {
-      ctx.status = 403;
-      ctx.body = err.message;
+    } catch (err) {
+      if (isNodeError(err)) {
+        ctx.status = 403;
+        ctx.body = err.message;
+      }
       return;
     }
 
@@ -78,15 +84,17 @@ export default function createRoutes(resolvePath: (path: string) => string): Rou
           ctx.status = 200;
           ctx.body = response;
           return;
-        } catch (err: any) {
-          if (err.code === 'ENOENT') {
-            ctx.status = 404;
-            ctx.body = err.message;
-            return;
-          }
+        } catch (err) {
+          if (isNodeError(err)) {
+            if (err.code === 'ENOENT') {
+              ctx.status = 404;
+              ctx.body = err.message;
+              return;
+            }
 
-          ctx.status = 400;
-          ctx.body = err.message;
+            ctx.status = 400;
+            ctx.body = err.message;
+          }
           return;
         }
       }
@@ -99,14 +107,16 @@ export default function createRoutes(resolvePath: (path: string) => string): Rou
             ctx.status = 200;
             ctx.body = response;
             return;
-          } catch (err: any) {
-            if (err.code === 'ENOENT') {
-              ctx.status = 404;
-              return;
-            }
+          } catch (err) {
+            if (isNodeError(err)) {
+              if (err.code === 'ENOENT') {
+                ctx.status = 404;
+                return;
+              }
 
-            ctx.status = 400;
-            ctx.body = err.message;
+              ctx.status = 400;
+              ctx.body = err.message;
+            }
             return;
           }
         } else {
@@ -116,13 +126,15 @@ export default function createRoutes(resolvePath: (path: string) => string): Rou
             ctx.status = 200;
             ctx.body = response;
             return;
-          } catch (err: any) {
-            if (err.code === 'ENOENT') {
-              ctx.status = 404;
-              return;
+          } catch (err) {
+            if (isNodeError(err)) {
+              if (err.code === 'ENOENT') {
+                ctx.status = 404;
+                return;
+              }
+              ctx.status = 400;
+              ctx.body = err.message;
             }
-            ctx.status = 400;
-            ctx.body = err.message;
             return;
           }
         }
@@ -135,23 +147,21 @@ export default function createRoutes(resolvePath: (path: string) => string): Rou
           ctx.status = 200;
           ctx.body = response;
           return;
-        } catch (err: any) {
-          if (err.code === 'ENOENT') {
-            ctx.status = 404;
-            return;
+        } catch (err) {
+          if (isNodeError(err)) {
+            if (err.code === 'ENOENT') {
+              ctx.status = 404;
+              return;
+            }
+            ctx.status = 400;
+            ctx.body = err.message;
           }
-          ctx.status = 400;
-          ctx.body = err.message;
         }
       }
     } else {
       ctx.status = 400;
       ctx.body = 'Command query param not specified';
-      return;
     }
-
-    ctx.status = 500;
-    ctx.body = 'Relay server error';
   });
 
   return router.routes();

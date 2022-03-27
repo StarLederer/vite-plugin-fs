@@ -22,7 +22,7 @@ Interact with fs by fetching requests to a local API.
 - [x] A node-fs-like abstaction of the api
 - [x] Automated tests
 - [x] Checking that this plugin is not included in production and SSR builds
-- [ ] No Typescript errors
+- [x] No Typescript errors
 
 ## Setup
 

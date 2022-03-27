@@ -1,5 +1,6 @@
 import * as fs from 'fs/promises';
 import Router from 'koa-router';
+import isNodeError from 'src/common/isNodeError';
 
 //
 //
@@ -12,12 +13,17 @@ export default function createRoutes(resolvePath: (path: string) => string): Rou
   const router = new Router();
 
   router.delete(/.*/, async (ctx) => {
+    ctx.status = 500;
+    ctx.body = 'Relay server error';
+
     let path;
     try {
       path = resolvePath(ctx.path);
-    } catch (err: any) {
-      ctx.status = 403;
-      ctx.body = err.message;
+    } catch (err) {
+      if (isNodeError(err)) {
+        ctx.status = 403;
+        ctx.body = err.message;
+      }
       return;
     }
 
@@ -29,20 +35,21 @@ export default function createRoutes(resolvePath: (path: string) => string): Rou
     try {
       await fs.rm(path, { recursive, force });
       ctx.status = 200;
-    } catch (err: any) {
+    } catch (err) {
+      if (isNodeError(err)) {
       // Couldn't rm
-      if (err.code === 'ENOENT') {
+        if (err.code === 'ENOENT') {
         // File doesn't exist
-        ctx.status = 404;
-      } else if (err.code === 'ERR_FS_EISDIR') {
+          ctx.status = 404;
+        } else if (err.code === 'ERR_FS_EISDIR') {
         // Tried ro rm a directory
-        ctx.status = 400;
-      } else {
+          ctx.status = 400;
+        } else {
         // Unknown error
-        ctx.status = 500;
+          ctx.status = 500;
+        }
+        ctx.body = err.message;
       }
-
-      ctx.body = err.message;
     }
   });
 
