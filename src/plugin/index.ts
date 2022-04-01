@@ -15,23 +15,9 @@ function VitePluginFs(userOptiuons: UserOptions = {}): Plugin {
     apply: 'serve',
 
     config(_, env) {
-      const config: UserConfig = {};
-
       if (env.mode === 'development') {
         isProd = false;
-
-        if (options.proxy.enable) {
-          config.server = {};
-          config.server.proxy = {};
-          config.server.proxy[options.proxy.path] = {
-            target: `http://localhost:${options.port}`,
-            changeOrigin: true,
-            rewrite: (path) => path.substring(options.proxy.path.length),
-          };
-        }
       }
-
-      return config;
     },
 
     buildStart() {
