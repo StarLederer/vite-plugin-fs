@@ -11,7 +11,6 @@ let server: FsServer;
 
 const userOptions: UserOptions = {
   rootDir: '__tests__/assets',
-  goAboveRoot: false,
 };
 
 const options = resolveOptions(userOptions);
@@ -20,9 +19,9 @@ function resolveWithRoot(...args: string[]) {
   return resolve(options.rootDir, ...args);
 }
 
-beforeAll(() => {
+beforeAll(async () => {
   server = new FsServer(resolveOptions(options));
-  server.start(true);
+  await server.start(true);
 });
 
 afterAll((done) => {

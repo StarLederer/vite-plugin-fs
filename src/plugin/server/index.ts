@@ -3,6 +3,7 @@ import { resolve } from 'path';
 import Koa from 'koa';
 import bodyParser from 'koa-bodyparser';
 import cors from '@koa/cors';
+import getPort from 'get-port';
 
 import { Options } from '../Options';
 import get from './requests/get';
@@ -13,6 +14,8 @@ class FsServer {
   server: http.Server;
 
   rootDir: string;
+
+  activePort: number | undefined;
 
   options: Options;
 
@@ -31,28 +34,29 @@ class FsServer {
     this.server = http.createServer(app.callback());
   }
 
-  start(silent?: boolean): void {
-    this.server.listen(7070, () => {
+  async start(silent?: boolean): Promise<void> {
+    const port = await getPort({ port: this.options.port });
+
+    this.server.listen(port, () => {
       if (!silent) {
         // eslint-disable-next-line no-console
         console.log('\x1b[41m');
         // eslint-disable-next-line no-console
-        console.log(`fs server is running on port ${this.options.port} and on /_fs`);
+        console.log(`fs relay server is running on port ${port}`);
         // eslint-disable-next-line no-console
         console.log(
           'Please be careful since any requests to this server can modify your actual file system',
         );
         // eslint-disable-next-line no-console
         console.log(
-          `${!this.options.goAboveRoot ? '\x1b[43m\x1b[30m' : ''}Clamping to ${this.rootDir} is ${this.options.goAboveRoot
-            ? 'OFF! A DELETE request to ../ will wipe the parent of this directory!'
-            : 'on. Everything outside this directory is safe'
-          }`,
+          `\x1b[43m\x1b[30mThe relay server sees ${this.rootDir} as root. Everything outside this directory is safe`,
         );
         // eslint-disable-next-line no-console
         console.log('\x1b[0m');
       }
     });
+
+    this.activePort = port;
   }
 
   stop(): void {
@@ -63,10 +67,6 @@ class FsServer {
     let cleanPath = path;
     while (cleanPath.length > 0 && cleanPath.startsWith('/')) {
       cleanPath = cleanPath.substring(1);
-    }
-
-    if (this.options.goAboveRoot) {
-      return resolve(this.rootDir, cleanPath);
     }
 
     const p = resolve(this.rootDir, cleanPath);
