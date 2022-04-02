@@ -1,14 +1,13 @@
 import abstraction from '../../../src/abstraction';
 
-const testPort = 7070;
-
 let lastFetch: { url: RequestInfo, init?: RequestInit };
 global.fetch = jest.fn((url: RequestInfo, init?: RequestInit) => {
   lastFetch = { url, init };
   return { status: 200, text() { return ''; }, json() { return '{}'; } };
 }) as jest.Mock;
 
-jest.mock('@vite-plugin-fs-runtime');
+const testPort = 7070;
+jest.mock('@vite-plugin-fs-runtime', () => ({ activePort: 7070 }), { virtual: true });
 
 describe('abstraction', () => {
   it('should build correct readdir queries', async () => {
