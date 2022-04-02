@@ -12,22 +12,22 @@ jest.mock('@vite-plugin-fs-runtime', () => ({ activePort: 7070 }), { virtual: tr
 describe('abstraction', () => {
   it('should build correct readdir queries', async () => {
     await abstraction.readdir('');
-    expect(lastFetch).toEqual({ url: `http://localhost:${testPort}/?command=readdir` });
+    expect(lastFetch).toEqual({ url: `http://localhost:${testPort}/?cmd=readdir` });
     await abstraction.readdir('', true);
-    expect(lastFetch).toEqual({ url: `http://localhost:${testPort}/?command=readdir&withFileTypes=true` });
+    expect(lastFetch).toEqual({ url: `http://localhost:${testPort}/?cmd=readdir&withFileTypes=true` });
   });
   it('should build correct readFile queries', async () => {
     await abstraction.readFile('');
-    expect(lastFetch).toEqual({ url: `http://localhost:${testPort}/?command=readFile` });
+    expect(lastFetch).toEqual({ url: `http://localhost:${testPort}/?cmd=readFile` });
   });
   it('should build correct stat queries', async () => {
     await abstraction.stat('');
-    expect(lastFetch).toEqual({ url: `http://localhost:${testPort}/?command=stat` });
+    expect(lastFetch).toEqual({ url: `http://localhost:${testPort}/?cmd=stat` });
   });
   it('should build correct writeFile queries', async () => {
     await abstraction.writeFile('file', '');
     expect(lastFetch).toEqual({
-      url: `http://localhost:${testPort}/file`,
+      url: `http://localhost:${testPort}/file?cmd=writeFile`,
       init: {
         method: 'POST',
         headers: {
@@ -40,12 +40,12 @@ describe('abstraction', () => {
   it('should build correct rm queries', async () => {
     await abstraction.rm('');
     expect(lastFetch).toEqual({
-      url: `http://localhost:${testPort}/`,
+      url: `http://localhost:${testPort}/?cmd=rm`,
       init: { method: 'DELETE' },
     });
     await abstraction.rm('', { recursive: true });
     expect(lastFetch).toEqual({
-      url: `http://localhost:${testPort}/?recursive=true`,
+      url: `http://localhost:${testPort}/?cmd=rm&recursive=true`,
       init: { method: 'DELETE' },
     });
   });

@@ -1,5 +1,21 @@
 interface UserOptions {
+  /**
+   * Port to serve the API at.
+   * Chooses a random one if the one specified is taken.
+   * Usually you don't need to configure this.
+   *
+   * @default 7070
+   */
   port?: number;
+
+  /**
+    * Root directory visible to browser.
+    *
+    * @default '/'
+    *
+    * @example
+    * './src/content'
+    */
   rootDir?: string;
 }
 

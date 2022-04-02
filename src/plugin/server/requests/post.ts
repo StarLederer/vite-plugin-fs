@@ -28,22 +28,31 @@ export default function createRoutes(resolvePath: (path: string) => string): Rou
       return;
     }
 
-    const dir = dirname(path);
-    const b = ctx.request.body as { data: '' };
-    const { data } = b;
+    if (ctx.query.cmd) {
+      if (ctx.query.cmd === 'writeFile') {
+        const dir = dirname(path);
+        const bdy = ctx.request.body as { data: '' };
+        const { data } = bdy;
 
-    try {
-      try {
-        await fs.mkdir(dir, { recursive: true });
-      } catch (err) {
-        // Couldn't mkdir, assume it exists
+        try {
+          try {
+            await fs.mkdir(dir, { recursive: true });
+          } catch (err) {
+            // Couldn't mkdir, assume it exists
+          }
+
+          await fs.writeFile(path, data);
+          ctx.status = 200;
+        } catch (err) {
+          // Couldn't writeFile
+          ctx.status = 500;
+        }
       }
 
-      await fs.writeFile(path, data);
-      ctx.status = 200;
-    } catch (err) {
-      // Couldn't writeFile
-      ctx.status = 500;
+      // Other commands ...
+    } else {
+      ctx.status = 400;
+      ctx.body = 'Command query param not specified';
     }
   });
 

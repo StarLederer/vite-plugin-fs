@@ -30,7 +30,8 @@
     "postpack": "rm .npmignore",
     "dev": "pnpm run build -- --watch",
     "build": "tsup",
-    "test": "jest"
+    "test": "jest",
+    "lint": "eslint ."
   },
   "engines": {
     "node": ">=14"
@@ -83,7 +84,7 @@
   },
   "dependencies": {
     "@koa/cors": "^3.3.0",
-    "get-port": "5",
+    "get-port": "^5.1.1",
     "koa": "^2.13.4",
     "koa-bodyparser": "^4.3.0",
     "koa-router": "^10.1.1"

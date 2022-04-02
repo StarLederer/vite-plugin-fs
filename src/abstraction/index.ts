@@ -1,9 +1,11 @@
 import { activePort } from '@vite-plugin-fs-runtime';
 import type { SimpleDirent, SimpleStats } from 'src/common/ApiResponses';
 
+const url = `http://localhost:${activePort}`;
+
 const fs = {
   async readdir(path: string, withFileTypes?: boolean): Promise<SimpleDirent> {
-    const res = await fetch(`http://localhost:${activePort}/${path}?command=readdir${withFileTypes ? '&withFileTypes=true' : ''}`);
+    const res = await fetch(`${url}/${path}?cmd=readdir${withFileTypes ? '&withFileTypes=true' : ''}`);
 
     if (res.status === 200) {
       const data = await res.json() as SimpleDirent;
@@ -14,7 +16,7 @@ const fs = {
   },
 
   async readFile(path: string): Promise<string> {
-    const res = await fetch(`http://localhost:${activePort}/${path}?command=readFile`);
+    const res = await fetch(`${url}/${path}?cmd=readFile`);
 
     if (res.status === 200) {
       const data = await res.text();
@@ -25,7 +27,7 @@ const fs = {
   },
 
   async stat(path: string): Promise<SimpleStats> {
-    const res = await fetch(`http://localhost:${activePort}/${path}?command=stat`);
+    const res = await fetch(`${url}/${path}?cmd=stat`);
 
     if (res.status === 200) {
       const data = await res.json() as SimpleStats;
@@ -36,7 +38,7 @@ const fs = {
   },
 
   async writeFile(path: string, data: string): Promise<void> {
-    await fetch(`http://localhost:${activePort}/${path}`, {
+    await fetch(`${url}/${path}?cmd=writeFile`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -45,8 +47,8 @@ const fs = {
     });
   },
 
-  async rm(path: string, options?: { recursive: boolean }): Promise<void> {
-    const res = await fetch(`http://localhost:${activePort}/${path}${options?.recursive ? '?recursive=true' : ''}`, {
+  async rm(path: string, options?: { recursive?: boolean, force?: boolean }): Promise<void> {
+    const res = await fetch(`${url}/${path}?cmd=rm${options?.recursive ? '&recursive=true' : ''}${options?.force ? '&force=true' : ''}`, {
       method: 'DELETE',
     });
 

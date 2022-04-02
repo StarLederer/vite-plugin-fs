@@ -75,10 +75,9 @@ export default function createRoutes(resolvePath: (path: string) => string): Rou
       return;
     }
 
-    // .../request?command=...
-    if (ctx.query.command) {
-      if (ctx.query.command === 'readFile') {
-        // readFile command
+    if (ctx.query.cmd) {
+      // readFile command
+      if (ctx.query.cmd === 'readFile') {
         try {
           const response = await readFile(path);
           ctx.status = 200;
@@ -99,9 +98,10 @@ export default function createRoutes(resolvePath: (path: string) => string): Rou
         }
       }
 
-      if (ctx.query.command === 'readdir') {
+      // readdir command
+      if (ctx.query.cmd === 'readdir') {
         if (ctx.query.withFileTypes) {
-        // readdir withFileTypes command
+        // readdir withFileTypes
           try {
             const response = (await readdir(path, true)) as SimpleDirent[];
             ctx.status = 200;
@@ -120,7 +120,7 @@ export default function createRoutes(resolvePath: (path: string) => string): Rou
             return;
           }
         } else {
-          // readdir command
+          // pure readdir command
           try {
             const response = await readdir(path);
             ctx.status = 200;
@@ -140,9 +140,9 @@ export default function createRoutes(resolvePath: (path: string) => string): Rou
         }
       }
 
-      if (ctx.query.command === 'stat') {
+      // stat command
+      if (ctx.query.cmd === 'stat') {
         try {
-          // stat command
           const response = await stat(path);
           ctx.status = 200;
           ctx.body = response;
@@ -158,6 +158,8 @@ export default function createRoutes(resolvePath: (path: string) => string): Rou
           }
         }
       }
+
+      // Other commands ...
     } else {
       ctx.status = 400;
       ctx.body = 'Command query param not specified';
