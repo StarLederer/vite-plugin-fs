@@ -167,65 +167,6 @@ await fetch(`${url}/path/to/somewhere?cmd=rm`, { method: 'DELETE' });
 await fetch(`${url}/path/to/somewhere?cmd=rm&recursive=true&force=true`, { method: 'DELETE' });
 ```
 
-## Example of displaying contents of a directory with a recursive Vue component
-
-```vue
-<!-- Dirent.vue -->
-
-<script>
-import { ref } from "vue";
-
-export default {
-  name: "Dirent",
-  props: {
-    dir: String,
-  },
-  setup(props) {
-    const children = ref([]);
-
-    fetch(`http://localhost:7070${props.dir}?command=stat`)
-      .then((response) => response.json())
-      .then((a) => {
-        if (a.stats.dir) {
-          fetch(`http://localhost:7070${props.dir}`)
-            .then((response) => response.json())
-            .then((b) => {
-              children.value = b.items;
-            });
-        }
-      });
-
-    return {
-      children,
-    };
-  },
-};
-</script>
-
-<template>
-  <li>
-    <span>{{ dir }}</span>
-    <ul>
-      <Dirent v-for="child in children" :dir="`${dir}/${child}`" />
-    </ul>
-  </li>
-</template>
-```
-
-```vue
-<!-- App.vue -->
-
-<script>
-import Dirent from "./components/Dirent.vue";
-</script>
-
-<template>
-  <ul>
-    <Dirent dir="/src" />
-  </ul>
-</template>
-```
-
 ## License
 
 MIT
