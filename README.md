@@ -1,31 +1,52 @@
+[npm-version-src]: https://img.shields.io/npm/v/vite-plugin-fs/latest.svg
+[npm-version-href]: https://npmjs.com/package/vite-plugin-fs
+[npm-downloads-src]: https://img.shields.io/npm/dm/vite-plugin-fs.svg
+[npm-downloads-href]: https://npmjs.com/package/vite-plugin-fs
+[license-src]: https://img.shields.io/npm/l/nuxt-content-writer.svg
+[license-href]: https://npmjs.com/package/nuxt-content-writer
+[libera-src]: https://img.shields.io/badge/libera-manifesto-lightgrey.svg
+[libera-href]: https://liberamanifesto.com
+
+[issue-tracker]: https://github.com/HermanLederer/vite-plugin-fs/issues
+[show-n-tell]: https://github.com/HermanLederer/vite-plugin-fs/discussions/categories/show-and-tell
+[github]: https://github.com/HermanLederer/vite-plugin-fs/tree/feature/beta-readme
+
 # [vite-plugin-fs](https://npmjs.com/package/vite-plugin-fs)
 
 [![npm version][npm-version-src]][npm-version-href]
 [![npm downloads][npm-downloads-src]][npm-downloads-href]
 [![License][license-src]][license-href]
+[![libera manifesto][libera-src]][libera-href]
 
-Interact with fs by fetching requests to a local API.
+Interact with fs from the browser in dev mode.
 
-> ~**New:** Everything planned before v1.0.0 has been implemented. Release candidate is ready.~ This was published by mistake but beta in on the way.
+> **News:** Everything planned before v1.0.0-beta has been implemented. The package is currently being tested in real projects. Please try it, submit problems to [the issue tracker][issue-tracker] and show what you made in [Github discussions][show-n-tell]
 
-> **New:** A convenient abstraction has been implemented. Check out new docs below.
+## What's supported by the relay server
 
-## What's already working
+- readdir
+- readFile (utf-8 only)
+- rm
+- stat
+- writeFile (writes strings only; creates directories automatically)
+- [something else?][issue-tracker]
 
-- Fetching a GET requests to execute fs.reafFile fs.readdir and fs.stat
-- Fetching a POST request to execute fs.writeFile
-- Fetching a DELETE request to execute fs.rm
-- Limiting of where API can go to protect your file system
+## Before v1.0.0
 
-## What is planned before v1.0.0
+Test projects reviewed (**0/5**):
 
-- [x] A node-fs-like abstaction of the api
-- [x] Automated tests
-- [x] Checking that this plugin is not included in production and SSR builds
-- [x] No Typescript errors
-- [x] All config options actually work
-- [x] Port taken error handling
-- [ ] Better examples
+- [submit yours][show-n-tell]
+
+Examples written:
+
+- Simple React example: **NO**
+- Simple Vue example: **NO**
+- Simple Svelte example: **NO**
+- Complex example: **NO**
+
+Contributions made by others (**0/3**):
+
+- [contribute][github]
 
 ## Setup
 
@@ -68,6 +89,7 @@ interface UserOptions {
    * './src/content'
    */
   rootDir?: string;
+}
 ```
 
 ## Usage
@@ -209,12 +231,3 @@ import Dirent from "./components/Dirent.vue";
 ## License
 
 MIT
-
-<!-- Badges -->
-
-[npm-version-src]: https://img.shields.io/npm/v/vite-plugin-fs/latest.svg
-[npm-version-href]: https://npmjs.com/package/vite-plugin-fs
-[npm-downloads-src]: https://img.shields.io/npm/dm/vite-plugin-fs.svg
-[npm-downloads-href]: https://npmjs.com/package/vite-plugin-fs
-[license-src]: https://img.shields.io/npm/l/nuxt-content-writer.svg
-[license-href]: https://npmjs.com/package/nuxt-content-writer
