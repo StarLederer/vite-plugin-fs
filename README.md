@@ -141,32 +141,30 @@ import { activePort } from '@vite-plugin-fs-runtime';
 
 const url = `http://localhost:${activePort}`;
 
-(async () => {
-  // To read a file
-  const fileData = await fetch(`${url}/path/to/somewhere?cmd=readFile`);
+// To read a file
+const fileData = await fetch(`${url}/path/to/somewhere?cmd=readFile`);
 
-  // To read a directory
-  const directoryEntries = await fetch(`${url}/path/to/somewhere?cmd=readdir`);
+// To read a directory
+const directoryEntries = await fetch(`${url}/path/to/somewhere?cmd=readdir`);
 
-  // To execute fs.stat
-  const stats = await fetch(`${url}/path/to/somewhere?cmd=stat`);
+// To execute fs.stat
+const stats = await fetch(`${url}/path/to/somewhere?cmd=stat`);
 
-  // To write a file
-  // (Creates the parent directories if they don't already exist automatically)
-  await fetch(`${url}/path/to/somewhere?cmd?=writeFile`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({data}),
-  });
+// To write a file
+// (Creates the parent directories if they don't already exist automatically)
+await fetch(`${url}/path/to/somewhere?cmd?=writeFile`, {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({data}),
+});
 
-  // To delete a file
-  await fetch(`${url}/path/to/somewhere?cmd=rm`, { method: 'DELETE' });
+// To delete a file
+await fetch(`${url}/path/to/somewhere?cmd=rm`, { method: 'DELETE' });
 
-  // To delete a file or directory (rm -rf)
-  await fetch(`${url}/path/to/somewhere?cmd=rm&recursive=true&force=true`, { method: 'DELETE' });
-})();
+// To delete a file or directory (rm -rf)
+await fetch(`${url}/path/to/somewhere?cmd=rm&recursive=true&force=true`, { method: 'DELETE' });
 ```
 
 ## Example of displaying contents of a directory with a recursive Vue component
