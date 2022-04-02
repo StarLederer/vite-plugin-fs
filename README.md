@@ -6,7 +6,7 @@
 
 Interact with fs by fetching requests to a local API.
 
-> -**New:** Everything planned before v1.0.0 has been implemented. Release candidate is ready.- This was published by mistake but release candidate is almost done.
+> ~**New:** Everything planned before v1.0.0 has been implemented. Release candidate is ready.~ This was published by mistake but beta in on the way.
 
 > **New:** A convenient abstraction has been implemented. Check out new docs below.
 
