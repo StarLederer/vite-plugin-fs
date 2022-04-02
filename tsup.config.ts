@@ -9,4 +9,5 @@ export default defineConfig({
   format: ['cjs', 'esm'],
   target: 'node14',
   outDir: 'lib',
+  external: ['@vite-plugin-fs-runtime'],
 });

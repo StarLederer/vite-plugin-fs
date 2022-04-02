@@ -37,7 +37,7 @@ module.exports = {
   overrides: [
     // Typescript files
     {
-      files: ['*.ts'],
+      files: ['src/**/*.ts', '__tests__/**/*.ts'],
       parserOptions: {
         project: './tsconfig.json',
       },

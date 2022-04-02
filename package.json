@@ -30,7 +30,8 @@
     "postpack": "rm .npmignore",
     "dev": "pnpm run build -- --watch",
     "build": "tsup",
-    "test": "jest"
+    "test": "jest",
+    "lint": "eslint ."
   },
   "engines": {
     "node": ">=14"
@@ -70,20 +71,20 @@
     "@typescript-eslint/parser": "^4.33.0",
     "eslint": "7.32.0",
     "eslint-config-airbnb-base": "^14.2.1",
-    "eslint-config-airbnb-typescript": "^14.0.1",
-    "eslint-plugin-import": "^2.25.2",
+    "eslint-config-airbnb-typescript": "^14.0.2",
+    "eslint-plugin-import": "^2.25.4",
     "jest": "^27.5.1",
-    "node-fetch": "2",
+    "node-fetch": "^2.6.7",
     "rimraf": "^3.0.2",
-    "rollup": "^2.58.3",
-    "supertest": "^6.2.2",
+    "rollup": "^2.70.1",
     "ts-jest": "^27.1.4",
-    "tsup": "^5.5.0",
-    "typescript": "^4.4.4",
-    "vite": "^2.8.6"
+    "tsup": "^5.12.2",
+    "typescript": "^4.6.3",
+    "vite": "^2.9.1"
   },
   "dependencies": {
-    "@koa/cors": "^3.2.0",
+    "@koa/cors": "^3.3.0",
+    "get-port": "^5.1.1",
     "koa": "^2.13.4",
     "koa-bodyparser": "^4.3.0",
     "koa-router": "^10.1.1"

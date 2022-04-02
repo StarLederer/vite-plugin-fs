@@ -11,7 +11,6 @@ let server: FsServer;
 
 const userOptions: UserOptions = {
   rootDir: '__tests__/assets',
-  goAboveRoot: false,
 };
 
 const options = resolveOptions(userOptions);
@@ -20,9 +19,12 @@ function resolveWithRoot(...args: string[]) {
   return resolve(options.rootDir, ...args);
 }
 
-beforeAll(() => {
+let url: string;
+
+beforeAll(async () => {
   server = new FsServer(resolveOptions(options));
-  server.start(true);
+  await server.start(true);
+  if (server.activePort) { url = `http://localhost:${server.activePort}`; }
 });
 
 afterAll((done) => {
@@ -55,7 +57,7 @@ describe('FsServer', () => {
 
 describe('readdir request', () => {
   it('should return correct file trees', async () => {
-    const response = await fetch('http://localhost:7070?command=readdir');
+    const response = await fetch(`${url}?cmd=readdir`);
     const data = await response.json() as string[];
     expect(response.status).toEqual(200);
     expect(data).toContain('file');
@@ -64,7 +66,7 @@ describe('readdir request', () => {
   });
 
   it('should return correct file trees when ?withFileTypes=true', async () => {
-    const response = await fetch('http://localhost:7070?command=readdir&withFileTypes=true');
+    const response = await fetch(`${url}?cmd=readdir&withFileTypes=true`);
     const data = await response.json() as { name: string; dir: boolean }[];
     expect(response.status).toEqual(200);
     expect(data).toEqual(expect.arrayContaining([
@@ -74,12 +76,12 @@ describe('readdir request', () => {
   });
 
   it('should return 404 when reading entries that don\' exist', async () => {
-    const response = await fetch('http://localhost:7070/notdirectory?command=readdir');
+    const response = await fetch(`${url}/notdirectory?cmd=readdir`);
     expect(response.status).toEqual(404);
   });
 
   it('should return error 400 when reading files', async () => {
-    const response = await fetch('http://localhost:7070/file?command=readdir');
+    const response = await fetch(`${url}/file?cmd=readdir`);
     expect(response.status).toEqual(400);
   });
 });
@@ -88,33 +90,33 @@ describe('readdir request', () => {
 
 describe('readFile request', () => {
   it('should read files correctly', async () => {
-    const response = await fetch('http://localhost:7070/file2?command=readFile');
+    const response = await fetch(`${url}/file2?cmd=readFile`);
     const data = await response.text();
     expect(response.status).toEqual(200);
     expect(data).toContain('file2 content');
   });
 
   it('should read empty files correctly', async () => {
-    const response = await fetch('http://localhost:7070/file2?command=readFile');
+    const response = await fetch(`${url}/file2?cmd=readFile`);
     const data = await response.text();
     expect(response.status).toEqual(200);
     expect(data).toContain('');
   });
 
   it('should read files in subdirectories correctly', async () => {
-    const response = await fetch('http://localhost:7070/directory/file3?command=readFile');
+    const response = await fetch(`${url}/directory/file3?cmd=readFile`);
     const data = await response.text();
     expect(response.status).toEqual(200);
     expect(data).toContain('file3 content');
   });
 
   it('should return 404 when reading files that don\'t exist', async () => {
-    const response = await fetch('http://localhost:7070/notfile?command=readFile');
+    const response = await fetch(`${url}/notfile?cmd=readFile`);
     expect(response.status).toEqual(404);
   });
 
   it('should return 400 when reading directories', async () => {
-    const response = await fetch('http://localhost:7070/directory?command=readFile');
+    const response = await fetch(`${url}/directory?cmd=readFile`);
     expect(response.status).toEqual(400);
   });
 });
@@ -123,21 +125,21 @@ describe('readFile request', () => {
 
 describe('stat request', () => {
   it('should stat files corectly', async () => {
-    const response = await fetch('http://localhost:7070/file?command=stat');
+    const response = await fetch(`${url}/file?cmd=stat`);
     const data = await response.json() as SimpleStats;
     expect(response.status).toEqual(200);
     expect(data.dir).toEqual(false);
   });
 
   it('should stat directories corectly', async () => {
-    const response = await fetch('http://localhost:7070/directory?command=stat');
+    const response = await fetch(`${url}/directory?cmd=stat`);
     const data = await response.json() as SimpleStats;
     expect(response.status).toEqual(200);
     expect(data.dir).toEqual(true);
   });
 
   it('should return 404 for entries that don\'t exist', async () => {
-    const response = await fetch('http://localhost:7070/notfile?command=stat');
+    const response = await fetch(`${url}/notfile?cmd=stat`);
     expect(response.status).toEqual(404);
   });
 });
@@ -146,7 +148,7 @@ describe('stat request', () => {
 
 describe('writeFile request', () => {
   it('should write files correctly', async () => {
-    const response = await fetch('http://localhost:7070/newdirectory/newfile',
+    const response = await fetch(`${url}/newdirectory/newfile?cmd=writeFile`,
       {
         method: 'POST',
         headers: {
@@ -165,20 +167,20 @@ describe('writeFile request', () => {
 describe('rm request', () => {
   it('should rm files', async () => {
     try { await fs.writeFile(resolve(resolveWithRoot('autofile')), ''); } catch (err) { /**/ }
-    const response = await fetch('http://localhost:7070/autofile', { method: 'DELETE' });
+    const response = await fetch(`${url}/autofile?cmd=rm`, { method: 'DELETE' });
     const statPromise = fs.stat(resolveWithRoot('autofile'));
     expect(response.status).toEqual(200);
     await expect(statPromise).rejects.toBeTruthy();
   });
 
   it('should not rm entries that don\'t exist', async () => {
-    const response = await fetch('http://localhost:7070/notfile', { method: 'DELETE' });
+    const response = await fetch(`${url}/notfile?cmd=rm`, { method: 'DELETE' });
     expect(response.status).toEqual(404);
   });
 
   it('should not rm directories', async () => {
     try { await fs.mkdir(resolveWithRoot('autodirectory')); } catch (err) { /**/ }
-    const response = await fetch('http://localhost:7070/autodirectory', { method: 'DELETE' });
+    const response = await fetch(`${url}/autodirectory?cmd=rm`, { method: 'DELETE' });
     const statPromise = fs.stat(resolveWithRoot('autodirectory'));
     expect(response.status).toEqual(400);
     await expect(statPromise).resolves.toBeTruthy();
@@ -186,7 +188,7 @@ describe('rm request', () => {
 
   it('should rm directories when ?recursive=true', async () => {
     try { await fs.mkdir('./__tests__/assets/autodirectory'); } catch (err) { /**/ }
-    const response = await fetch('http://localhost:7070/autodirectory?recursive=true', { method: 'DELETE' });
+    const response = await fetch(`${url}/autodirectory?cmd=rm&recursive=true`, { method: 'DELETE' });
     const statPromise = fs.stat('./__tests__/assets/autodirectory');
     expect(response.status).toEqual(200);
     await expect(statPromise).rejects.toBeTruthy();

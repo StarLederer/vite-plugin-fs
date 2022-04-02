@@ -1,11 +1,22 @@
 interface UserOptions {
+  /**
+   * Port to serve the API at.
+   * Chooses a random one if the one specified is taken.
+   * Usually you don't need to configure this.
+   *
+   * @default 7070
+   */
   port?: number;
+
+  /**
+    * Root directory visible to browser.
+    *
+    * @default '/'
+    *
+    * @example
+    * './src/content'
+    */
   rootDir?: string;
-  goAboveRoot?: boolean;
-  proxy?: {
-    enable: boolean;
-    path: string;
-  };
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -14,11 +25,6 @@ interface Options extends Required<UserOptions> {}
 const defaultOptions: Options = {
   port: 7070,
   rootDir: '',
-  goAboveRoot: false,
-  proxy: {
-    enable: true,
-    path: '/_fs',
-  },
 };
 
 function resolveOptions(userOptiuons: UserOptions): Options {

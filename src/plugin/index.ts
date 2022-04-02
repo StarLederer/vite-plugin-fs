@@ -1,9 +1,12 @@
-import type { Plugin, UserConfig } from 'vite';
+import type { Plugin } from 'vite';
 import FsServer from './server';
 import { UserOptions, resolveOptions } from './Options';
 
 function VitePluginFs(userOptiuons: UserOptions = {}): Plugin {
   const options = resolveOptions(userOptiuons);
+
+  const virtualModuleId = '@vite-plugin-fs-runtime';
+  const resolvedVirtualModuleId = `\0${virtualModuleId}`;
 
   let server: null | FsServer = null;
 
@@ -15,30 +18,34 @@ function VitePluginFs(userOptiuons: UserOptions = {}): Plugin {
     apply: 'serve',
 
     config(_, env) {
-      const config: UserConfig = {};
-
       if (env.mode === 'development') {
         isProd = false;
+      }
+    },
 
-        if (options.proxy.enable) {
-          config.server = {};
-          config.server.proxy = {};
-          config.server.proxy[options.proxy.path] = {
-            target: `http://localhost:${options.port}`,
-            changeOrigin: true,
-            rewrite: (path) => path.substring(options.proxy.path.length),
-          };
+    async buildStart() {
+      if (!isProd) {
+        server = new FsServer(options);
+        await server.start();
+      }
+    },
+
+    resolveId(id) {
+      if (id === virtualModuleId) {
+        return resolvedVirtualModuleId;
+      }
+
+      return null;
+    },
+
+    load(id) {
+      if (typeof server?.activePort === 'number') {
+        if (id === resolvedVirtualModuleId) {
+          return `export const activePort = ${server.activePort}`;
         }
       }
 
-      return config;
-    },
-
-    buildStart() {
-      if (!isProd) {
-        server = new FsServer(options);
-        server.start();
-      }
+      return null;
     },
 
     closeBundle() {

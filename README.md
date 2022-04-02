@@ -6,7 +6,7 @@
 
 Interact with fs by fetching requests to a local API.
 
-> **New:** Everything planned before v1.0.0 has been implemented. Release candidate is ready.
+> ~**New:** Everything planned before v1.0.0 has been implemented. Release candidate is ready.~ This was published by mistake but beta in on the way.
 
 > **New:** A convenient abstraction has been implemented. Check out new docs below.
 
@@ -23,8 +23,9 @@ Interact with fs by fetching requests to a local API.
 - [x] Automated tests
 - [x] Checking that this plugin is not included in production and SSR builds
 - [x] No Typescript errors
-- [ ] All config options actually work
-- [ ] Taken port error handling
+- [x] All config options actually work
+- [x] Port taken error handling
+- [ ] Better examples
 
 ## Setup
 
@@ -48,48 +49,25 @@ export default {
 ## Options
 
 ```ts
-export interface Options {
+interface UserOptions {
   /**
    * Port to serve the API at.
+   * Chooses a random one if the one specified is taken.
+   * Usually you don't need to configure this.
    *
    * @default 7070
    */
   port?: number;
 
   /**
-   * Root directory for fs requests relative to the project directory.
+   * Root directory visible to browser.
    *
    * @default '/'
+   *
+   * @example
+   * './src/content'
    */
   rootDir?: string;
-
-  /**
-   * Allow going above rootDir.
-   * Enabling this is really dangerous!
-   * Any request to the API will be able to read
-   * and modify files anywhere on your system.
-   * Indended for personal use only.
-   *
-   * @default false
-   */
-  goAboveRoot?: boolean;
-
-  // This option might get removed in the future versions
-  proxy?: {
-    /**
-     * Inject a proxy to the vite config.
-     *
-     * @default true
-     */
-    enable: boolean;
-
-    /**
-     * Proxy path.
-     *
-     * @default '/_fs'
-     */
-    path: string;
-  };
 ```
 
 ## Usage
@@ -99,7 +77,7 @@ The relay server only works in dev mode but the abstraction module can still be 
 This plugin runs a relay server that allows the browser to communicate with node. There are two ways to interact with the relay server:
 
 - use the abstraction API (**recommended**),
-- fetch network requests (low level, might change).
+- fetch network requests (not supported).
 
 ### Abstraction API
 
@@ -107,92 +85,66 @@ The abstraction API is designed to act as much like node fs as possible.
 
 Import the abstraction API in your browser code
 
-```vue
-<script>
-  import fs from "vite-plugin-fs/browser";
-</script>
-```
-
-To read a file
-
 ```ts
+import fs from 'vite-plugin-fs/browser';
+
+// To read a file
 const file = await fs.readFile('path/to/somewhere');
-```
 
-To read a directory
-
-```ts
+// To read a directory
 const dir = await fs.readdir('path/to/somewhere');
-```
 
-To stat a path
-
-```ts
+// To stat a path
 const stats = await fs.stat('path/to/somewhere');
-```
 
-To write a file
-
-```ts
+// To write a file
 // Currently only strings are supported as the second argument
 await fs.writeFile('path/to/somewhere', 'File content');
-```
 
-To delete a file
-
-```ts
+// To delete a file
 await fs.rm('path/to/somewhere');
-```
 
-To delete a file or directory
-
-```ts
+// To delete a file or directory (rm -r)
 await fs.rm('path/to/somewhere', { recursive: true });
 ```
 
 ### Network requests
 
-This is a more direct way to interact with the relay server, however, it is inconvenient, error-prone and there is no type checking. While this method is documented, it is not recommended to use and the docs for it might get removed. The API for network requests might also change a lot, unlike the abstraction API that will always act as much like node fs as possible.
+*Do not use this method in production!*
 
-To read a file
-
-```ts
-await fetch(`http://localhost:7070/path/to/somewhere?command=readFile`);
-```
-
-To read a directory
+This is a more direct way to interact with the relay server, however, it is inconvenient, error-prone and does not have a stable API. Breaking changes to this method are not documented. **This method is documented purely for educational reasons.** Only use this method if you want to play around with the plugin and better understand what it does in the background.
 
 ```ts
-await fetch(`http://localhost:7070/path/to/somewhere?command=readdir`);
-```
+import { activePort } from '@vite-plugin-fs-runtime';
 
-To execute fs.stat
+const url = `http://localhost:${activePort}`;
 
-```ts
-await fetch(`http://localhost:7070/path/to/somewhere?command=stat`);
-```
+(async () => {
+  // To read a file
+  const fileData = await fetch(`${url}/path/to/somewhere?cmd=readFile`);
 
-To write a file
+  // To read a directory
+  const directoryEntries = await fetch(`${url}/path/to/somewhere?cmd=readdir`);
 
-```ts
-await fetch(`http://localhost:7070/path/to/somewhere`, {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  body: JSON.stringify({data}),
-});
-// writes body.data to the file at the given path. Creates the parent directories if they don't already exist.
-```
+  // To execute fs.stat
+  const stats = await fetch(`${url}/path/to/somewhere?cmd=stat`);
 
-To delete a file
+  // To write a file
+  // (Creates the parent directories if they don't already exist automatically)
+  await fetch(`${url}/path/to/somewhere?cmd?=writeFile`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({data}),
+  });
 
-```ts
-await fetch(`http://localhost:7070/path/to/somewhere`, { method: 'DELETE' });
-// deletes the file or direcoty if it exists. Returns 500 if the path is not a file or an empty folder
+  // To delete a file
+  await fetch(`${url}/path/to/somewhere?cmd=rm`, { method: 'DELETE' });
 
-await fetch(`http://localhost:7070/path/to/somewhere?recursive=true&force=true`, { method: 'DELETE' });
-// deletes the file or direcoty if it exists. Also deletes non-empty directories. Similar to rm -rf
+  // To delete a file or directory (rm -rf)
+  await fetch(`${url}/path/to/somewhere?cmd=rm&recursive=true&force=true`, { method: 'DELETE' });
+})();
 ```
 
 ## Example of displaying contents of a directory with a recursive Vue component
