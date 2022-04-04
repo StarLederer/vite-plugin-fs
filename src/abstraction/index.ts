@@ -1,4 +1,4 @@
-import { activePort } from '@vite-plugin-fs-runtime';
+import { activePort } from 'virtual:fs';
 import type { SimpleDirent, SimpleStats } from 'src/common/ApiResponses';
 
 const url = `http://localhost:${activePort}`;

@@ -137,7 +137,7 @@ await fs.rm('path/to/somewhere', { recursive: true });
 This is a more direct way to interact with the relay server, however, it is inconvenient, error-prone and does not have a stable API. Breaking changes to this method are not documented. **This method is documented purely for educational reasons.** Only use this method if you want to play around with the plugin and better understand what it does in the background.
 
 ```ts
-import { activePort } from '@vite-plugin-fs-runtime';
+import { activePort } from 'virtual:fs';
 
 const url = `http://localhost:${activePort}`;
 

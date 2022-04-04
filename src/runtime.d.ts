@@ -1,3 +1,3 @@
-declare module '@vite-plugin-fs-runtime' {
+declare module 'virtual:fs' {
   const activePort: number;
 }

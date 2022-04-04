@@ -5,7 +5,7 @@ import { UserOptions, resolveOptions } from './Options';
 function VitePluginFs(userOptiuons: UserOptions = {}): Plugin {
   const options = resolveOptions(userOptiuons);
 
-  const virtualModuleId = '@vite-plugin-fs-runtime';
+  const virtualModuleId = 'virtual:fs';
   const resolvedVirtualModuleId = `\0${virtualModuleId}`;
 
   let server: null | FsServer = null;
@@ -21,6 +21,12 @@ function VitePluginFs(userOptiuons: UserOptions = {}): Plugin {
       if (env.mode === 'development') {
         isProd = false;
       }
+
+      return {
+        optimizeDeps: {
+          exclude: [virtualModuleId],
+        },
+      };
     },
 
     async buildStart() {

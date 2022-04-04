@@ -7,7 +7,7 @@ global.fetch = jest.fn((url: RequestInfo, init?: RequestInit) => {
 }) as jest.Mock;
 
 const testPort = 7070;
-jest.mock('@vite-plugin-fs-runtime', () => ({ activePort: 7070 }), { virtual: true });
+jest.mock('virtual:fs', () => ({ activePort: 7070 }), { virtual: true });
 
 describe('abstraction', () => {
   it('should build correct readdir queries', async () => {
