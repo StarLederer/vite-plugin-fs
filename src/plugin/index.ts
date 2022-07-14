@@ -25,7 +25,7 @@ function VitePluginFs(userOptiuons: UserOptions = {}): Plugin {
       return {
         build: {
           rollupOptions: {
-            external: 'virtual:fs',
+            external: [virtualModuleId],
           },
         },
         optimizeDeps: {
