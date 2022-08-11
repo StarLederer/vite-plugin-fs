@@ -94,12 +94,12 @@ interface UserOptions {
 
 ## Usage
 
-The relay server only works in dev mode but the abstraction module can still be included in production, it is up to you to ensure it is not. There is no significant consequewnces to inclusing the abstractions layer in production since it will just make requests to a an inactive API endpoint, however, it is unnecessary code that should not be shipped to users.
+The relay server only works in dev mode but the abstraction module can still be imported in production, it is up to you to ensure it is not. The abstraction layer is not buildable in production since it relies on fs relay server port, which does not exist at buid time. Importhing the abstraction layer at build time will casue an error.
 
 This plugin runs a relay server that allows the browser to communicate with node. There are two ways to interact with the relay server:
 
 - use the abstraction API (**recommended**),
-- fetch network requests (not supported).
+- fetch network requests (tinkering only).
 
 ### Abstraction API
 
