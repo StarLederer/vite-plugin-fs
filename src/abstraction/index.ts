@@ -4,11 +4,11 @@ import type { SimpleDirent, SimpleStats } from 'src/common/ApiResponses';
 const url = `http://localhost:${activePort}`;
 
 const fs = {
-  async readdir(path: string, withFileTypes?: boolean): Promise<SimpleDirent> {
+  async readdir(path: string, withFileTypes?: boolean): Promise<SimpleDirent[]> {
     const res = await fetch(`${url}/${path}?cmd=readdir${withFileTypes ? '&withFileTypes=true' : ''}`);
 
     if (res.status === 200) {
-      const data = await res.json() as SimpleDirent;
+      const data = await res.json() as SimpleDirent[];
       return data;
     }
 
