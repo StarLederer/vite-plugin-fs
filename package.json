@@ -8,12 +8,10 @@
   "exports": {
     ".": {
       "import": "./lib/plugin/index.js",
-      "require": "./lib/plugin/index.cjs",
       "types": "./lib/plugin/index.d.ts"
     },
     "./browser": {
       "import": "./lib/abstraction/index.js",
-      "require": "./lib/abstraction/index.cjs",
       "types": "./lib/abstraction/index.d.ts"
     }
   },
@@ -80,7 +78,7 @@
     "ts-jest": "^27.1.5",
     "tsup": "^5.12.9",
     "typescript": "^4.7.4",
-    "vite": "^2.9.14"
+    "vite": "^3.0.5"
   },
   "dependencies": {
     "@koa/cors": "^3.3.0",
