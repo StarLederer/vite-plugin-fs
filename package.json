@@ -26,7 +26,7 @@
   "scripts": {
     "prepack": "pnpm run build && cp .gitignore .npmignore && cat .npmpack >> .npmignore",
     "postpack": "rm .npmignore",
-    "dev": "pnpm run build -- --watch",
+    "dev": "pnpm run build --watch",
     "build": "tsup",
     "test": "jest",
     "lint": "eslint ."
