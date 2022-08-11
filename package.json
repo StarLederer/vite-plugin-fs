@@ -2,8 +2,7 @@
   "name": "vite-plugin-fs",
   "version": "1.0.0-beta.3",
   "description": "Interact with fs from the browser in dev mode",
-  "main": "./lib/plugin/index.cjs",
-  "module": "./lib/plugin/index.js",
+  "main": "./lib/plugin/index.js",
   "types": "./lib/plugin/index.d.ts",
   "exports": {
     ".": {
