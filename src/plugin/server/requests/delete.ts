@@ -8,7 +8,7 @@ import isNodeError from '../../../common/isNodeError';
 
 export default function createRoutes(resolvePath: (path: string) => string): Router.IMiddleware {
   //
-  // Post request routing
+  // Delete request routing
 
   const router = new Router();
 
