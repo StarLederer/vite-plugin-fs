@@ -167,6 +167,14 @@ await fetch(`${url}/path/to/somewhere?cmd=rm`, { method: 'DELETE' });
 await fetch(`${url}/path/to/somewhere?cmd=rm&recursive=true&force=true`, { method: 'DELETE' });
 ```
 
+## Sponsors
+
+<p align="center">
+  <a href="https://starlederer.github.io/sponsors/sponsors.svg">
+    <img src="https://starlederer.github.io/sponsors/sponsors.svg"/>
+  </a>
+</p>
+
 ## License
 
 MIT
