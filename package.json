@@ -22,9 +22,11 @@
     }
   },
   "type": "module",
+  "files": [
+    "lib"
+  ],
   "scripts": {
-    "prepack": "pnpm run build && cp .gitignore .npmignore && cat .npmpack >> .npmignore",
-    "postpack": "rm .npmignore",
+    "prepack": "pnpm run build",
     "dev": "pnpm run build --watch",
     "build": "tsup",
     "test": "jest",
