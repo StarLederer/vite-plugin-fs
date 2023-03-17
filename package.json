@@ -5,13 +5,13 @@
   "author": "StarLederer",
   "license": "MIT",
   "funding": "https://github.com/sponsors/StarLederer",
-  "homepage": "https://github.com/HermanLederer/vite-plugin-fs#readme",
+  "homepage": "https://github.com/StarLederer/vite-plugin-fs#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/HermanLederer/vite-plugin-fs.git"
+    "url": "git+https://github.com/StarLederer/vite-plugin-fs.git"
   },
   "bugs": {
-    "url": "https://github.com/HermanLederer/vite-plugin-fs/issues"
+    "url": "https://github.com/StarLederer/vite-plugin-fs/issues"
   },
   "keywords": [
     "vite",
