@@ -6,7 +6,7 @@ export default defineConfig({
   sourcemap: false,
   clean: true,
   dts: true,
-  format: ['esm'],
+  format: ['cjs', 'esm'],
   target: 'node14',
   outDir: 'lib',
   external: ['virtual:fs'],

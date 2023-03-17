@@ -2,42 +2,16 @@
   "name": "vite-plugin-fs",
   "version": "1.0.0-beta.5",
   "description": "Interact with fs from the browser in dev mode",
-  "main": "./lib/plugin/index.js",
-  "types": "./lib/plugin/index.d.ts",
-  "exports": {
-    ".": {
-      "import": "./lib/plugin/index.js",
-      "types": "./lib/plugin/index.d.ts"
-    },
-    "./browser": {
-      "import": "./lib/abstraction/index.js",
-      "types": "./lib/abstraction/index.d.ts"
-    }
-  },
-  "typesVersions": {
-    "*": {
-      "browser": [
-        "./lib/abstraction/index.d.ts"
-      ]
-    }
-  },
-  "type": "module",
-  "files": [
-    "lib"
-  ],
-  "scripts": {
-    "prepack": "pnpm run build",
-    "dev": "pnpm run build --watch",
-    "build": "tsup",
-    "test": "jest",
-    "lint": "eslint ."
-  },
-  "engines": {
-    "node": ">=14"
-  },
+  "author": "StarLederer",
+  "license": "MIT",
+  "funding": "https://github.com/sponsors/StarLederer",
+  "homepage": "https://github.com/HermanLederer/vite-plugin-fs#readme",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/HermanLederer/vite-plugin-fs.git"
+  },
+  "bugs": {
+    "url": "https://github.com/HermanLederer/vite-plugin-fs/issues"
   },
   "keywords": [
     "vite",
@@ -51,12 +25,42 @@
     "backend",
     "sever"
   ],
-  "author": "HermanLederer",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/HermanLederer/vite-plugin-fs/issues"
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./lib/plugin/index.d.ts",
+      "require": "./lib/plugin/index.js",
+      "import": "./lib/plugin/index.mjs"
+    },
+    "./browser": {
+      "types": "./lib/abstraction/index.d.ts",
+      "require": "./lib/abstraction/index.js",
+      "import": "./lib/abstraction/index.mjs"
+    }
   },
-  "homepage": "https://github.com/HermanLederer/vite-plugin-fs#readme",
+  "main": "lib/plugin/index.js",
+  "module": "lib/plugin/index.mjs",
+  "types": "lib/plugin/index.d.ts",
+  "files": [
+    "lib"
+  ],
+  "engines": {
+    "node": ">=14"
+  },
+  "typesVersions": {
+    "*": {
+      "browser": [
+        "./lib/abstraction/index.d.ts"
+      ]
+    }
+  },
+  "scripts": {
+    "prepack": "pnpm run build",
+    "dev": "pnpm run build --watch",
+    "build": "tsup",
+    "test": "jest",
+    "lint": "eslint ."
+  },
   "devDependencies": {
     "@types/cors": "^2.8.13",
     "@types/express": "^4.17.17",
