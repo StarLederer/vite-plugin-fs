@@ -18,7 +18,7 @@ jobs:
           node-version: 16
       - uses: pnpm/action-setup@v2
         with:
-          version: 6.x.x
+          version: 7.x.x
       - run: pnpm install
       - run: pnpm test
 
@@ -33,8 +33,8 @@ jobs:
           registry-url: https://registry.npmjs.org/
       - uses: pnpm/action-setup@v2
         with:
-          version: 6.x.x
+          version: 7.x.x
       - run: pnpm install
       - run: npm publish
         env:
-          NODE_AUTH_TOKEN: ${{secrets.npm_token}}
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
