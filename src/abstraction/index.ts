@@ -3,6 +3,8 @@ import type { SimpleDirent, SimpleStats } from 'src/common/ApiResponses';
 
 const url = `http://localhost:${activePort}`;
 
+const textDecoder = new TextDecoder();
+
 const fs = {
   async readdir(path: string, withFileTypes?: boolean): Promise<SimpleDirent[]> {
     const res = await fetch(`${url}/${path}?cmd=readdir${withFileTypes ? '&withFileTypes=true' : ''}`);
@@ -37,13 +39,11 @@ const fs = {
     throw new Error(await res.text());
   },
 
-  async writeFile(path: string, data: string): Promise<void> {
+  async writeFile(path: string, data: string | ArrayBufferView | DataView): Promise<void> {
     await fetch(`${url}/${path}?cmd=writeFile`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ data }),
+      headers: { 'Content-Type': 'text/plain' },
+      body: typeof data === 'string' ? data : textDecoder.decode(data),
     });
   },
 
