@@ -83,6 +83,11 @@ describe('readdir request', () => {
     const response = await fetch(`${url}/file?cmd=readdir`);
     expect(response.status).toEqual(400);
   });
+
+  it('should support various UTF-8 characters in path', async () => {
+    const response = await fetch(`${url}/directory 目录 каталог/file 文件 файл?cmd=readFile`);
+    expect(response.status).toEqual(200);
+  });
 });
 
 // readFile
@@ -118,6 +123,11 @@ describe('readFile request', () => {
     const response = await fetch(`${url}/directory?cmd=readFile`);
     expect(response.status).toEqual(400);
   });
+
+  it('should support various UTF-8 characters in path', async () => {
+    const response = await fetch(`${url}/directory 目录 каталог/file 文件 файл?cmd=readFile`);
+    expect(response.status).toEqual(200);
+  });
 });
 
 // stat
@@ -140,6 +150,11 @@ describe('stat request', () => {
   it('should return 404 for entries that don\'t exist', async () => {
     const response = await fetch(`${url}/notfile?cmd=stat`);
     expect(response.status).toEqual(404);
+  });
+
+  it('should support various UTF-8 characters in path', async () => {
+    const response = await fetch(`${url}/directory 目录 каталог/file 文件 файл?cmd=stat`);
+    expect(response.status).toEqual(200);
   });
 });
 
@@ -186,6 +201,18 @@ describe('writeFile request', () => {
     expect(response.status).toEqual(200);
     expect(newdata.buffer).toEqual(testData);
   });
+
+  it('should support various UTF-8 characters in path', async () => {
+    const testFilename = 'new file 文件 файл';
+    const response = await fetch(`${url}/newdirectory/${testFilename}?cmd=writeFile`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: '',
+    });
+    const statPromise = fs.stat(resolveWithRoot(`newdirectory/${testFilename}`));
+    expect(response.status).toEqual(200);
+    await expect(statPromise).resolves.toBeTruthy();
+  });
 });
 
 // rm
@@ -216,6 +243,15 @@ describe('rm request', () => {
     try { await fs.mkdir('./__tests__/assets/autodirectory'); } catch (err) { /**/ }
     const response = await fetch(`${url}/autodirectory?cmd=rm&recursive=true`, { method: 'DELETE' });
     const statPromise = fs.stat('./__tests__/assets/autodirectory');
+    expect(response.status).toEqual(200);
+    await expect(statPromise).rejects.toBeTruthy();
+  });
+
+  it('should support various UTF-8 characters in path', async () => {
+    const testFilename = 'auto file 文件 файл';
+    try { await fs.writeFile(resolve(resolveWithRoot(testFilename)), ''); } catch (err) { /**/ }
+    const response = await fetch(`${url}/${testFilename}?cmd=rm`, { method: 'DELETE' });
+    const statPromise = fs.stat(resolveWithRoot(testFilename));
     expect(response.status).toEqual(200);
     await expect(statPromise).rejects.toBeTruthy();
   });
