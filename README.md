@@ -20,7 +20,7 @@
 
 Interact with fs from the browser in dev mode.
 
-> **News:** Everything planned before v1.0.0-beta has been implemented. The package is currently being tested in real projects. Please try it, submit problems to [the issue tracker][issue-tracker] and show what you made in [Github discussions][show-n-tell]
+> **News:** v1.0.0 has been released after nearly 2 years of preview! The original release criteria were not met completely but the plugin has proven itself over this time in other ways, and it is about to receive new and exciting features that would fit a lot better in a version bump. Thank you for using vite-plugin-fs, and see you in v1.1.0!
 
 ## What's supported by the relay server
 
@@ -30,23 +30,6 @@ Interact with fs from the browser in dev mode.
 - stat
 - writeFile (writes strings only; creates directories automatically)
 - [something else?][issue-tracker]
-
-## Before v1.0.0
-
-Test projects reviewed (**0/5**):
-
-- [submit yours][show-n-tell]
-
-Examples written:
-
-- Simple React example: **NO**
-- Simple Vue example: **NO**
-- Simple Svelte example: **NO**
-- Complex example: **NO**
-
-Contributions made by others (**0/3**):
-
-- [contribute][github]
 
 ## Setup
 
