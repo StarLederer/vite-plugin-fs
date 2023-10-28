@@ -11,13 +11,15 @@ import post from './requests/post';
 import del from './requests/delete';
 
 class FsServer {
-  server: http.Server;
+  app: Koa<Koa.DefaultState, Koa.DefaultContext>;
 
   rootDir: string;
 
   activePort: number | undefined;
 
   options: Options;
+
+  server?: http.Server;
 
   constructor(options: Options) {
     this.options = options;
@@ -33,36 +35,37 @@ class FsServer {
     app.use(post(this.resolvePath));
     app.use(del(this.resolvePath));
 
-    this.server = http.createServer(app.callback());
+    this.app = app;
   }
 
   async start(silent?: boolean): Promise<void> {
     const port = await getPort({ port: this.options.port });
 
-    this.server.listen(port, () => {
-      if (!silent) {
-        // eslint-disable-next-line no-console
-        console.log('\x1b[41m');
-        // eslint-disable-next-line no-console
-        console.log(`fs relay server is running on port ${port}`);
-        // eslint-disable-next-line no-console
-        console.log(
-          'Please be careful since any requests to this server can modify your actual file system',
-        );
-        // eslint-disable-next-line no-console
-        console.log(
-          `\x1b[43m\x1b[30mThe relay server sees ${this.rootDir} as root. Everything outside this directory is safe`,
-        );
-        // eslint-disable-next-line no-console
-        console.log('\x1b[0m');
-      }
-    });
+    this.server = this.app.listen(port);
+
+    if (!silent) {
+      // eslint-disable-next-line no-console
+      console.log('\x1b[41m');
+      // eslint-disable-next-line no-console
+      console.log(`fs relay server is running on port ${port}`);
+      // eslint-disable-next-line no-console
+      console.log(
+        'Please be careful since any requests to this server can modify your actual file system',
+      );
+      // eslint-disable-next-line no-console
+      console.log(
+        `\x1b[43m\x1b[30mThe relay server sees ${this.rootDir} as root. Everything outside this directory is safe`,
+      );
+      // eslint-disable-next-line no-console
+      console.log('\x1b[0m');
+    }
 
     this.activePort = port;
   }
 
   stop(): void {
-    this.server.close();
+    this.server?.close();
+    this.server = undefined;
   }
 
   resolvePath = (path: string): string => {
