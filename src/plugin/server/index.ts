@@ -24,7 +24,9 @@ class FsServer {
     this.rootDir = resolve(this.options.rootDir);
 
     const app = new Koa();
-    app.use(bodyParser());
+    app.use(bodyParser({
+      enableTypes: ['json', 'text'],
+    }));
     app.use(cors());
 
     app.use(get(this.resolvePath));

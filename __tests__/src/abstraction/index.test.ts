@@ -16,27 +16,37 @@ describe('abstraction', () => {
     await abstraction.readdir('', true);
     expect(lastFetch).toEqual({ url: `http://localhost:${testPort}/?cmd=readdir&withFileTypes=true` });
   });
+
   it('should build correct readFile queries', async () => {
     await abstraction.readFile('');
     expect(lastFetch).toEqual({ url: `http://localhost:${testPort}/?cmd=readFile` });
   });
+
   it('should build correct stat queries', async () => {
     await abstraction.stat('');
     expect(lastFetch).toEqual({ url: `http://localhost:${testPort}/?cmd=stat` });
   });
+
   it('should build correct writeFile queries', async () => {
-    await abstraction.writeFile('file', '');
-    expect(lastFetch).toEqual({
+    const expected = {
       url: `http://localhost:${testPort}/file?cmd=writeFile`,
       init: {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: '{"data":""}',
+        headers: { 'Content-Type': 'text/plain' },
+        body: '',
       },
-    });
+    };
+
+    await abstraction.writeFile('file', '');
+    expect(lastFetch).toEqual(expected);
+
+    await abstraction.writeFile('file', new Uint8Array());
+    expect(lastFetch).toEqual(expected);
+
+    await abstraction.writeFile('file', new DataView(new ArrayBuffer(0)));
+    expect(lastFetch).toEqual(expected);
   });
+
   it('should build correct rm queries', async () => {
     await abstraction.rm('');
     expect(lastFetch).toEqual({
