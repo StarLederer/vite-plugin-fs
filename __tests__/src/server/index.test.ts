@@ -1,7 +1,6 @@
 import fetch from 'node-fetch';
 import * as fs from 'fs/promises';
 import { resolve } from 'path';
-
 import { UserOptions } from 'src/plugin/Options';
 import { SimpleStats } from 'src/common/ApiResponses';
 import FsServer from '../../../src/plugin/server';
@@ -84,6 +83,11 @@ describe('readdir request', () => {
     const response = await fetch(`${url}/file?cmd=readdir`);
     expect(response.status).toEqual(400);
   });
+
+  it('should support various UTF-8 characters in path', async () => {
+    const response = await fetch(`${url}/directory 目录 каталог/file 文件 файл?cmd=readFile`);
+    expect(response.status).toEqual(200);
+  });
 });
 
 // readFile
@@ -119,6 +123,11 @@ describe('readFile request', () => {
     const response = await fetch(`${url}/directory?cmd=readFile`);
     expect(response.status).toEqual(400);
   });
+
+  it('should support various UTF-8 characters in path', async () => {
+    const response = await fetch(`${url}/directory 目录 каталог/file 文件 файл?cmd=readFile`);
+    expect(response.status).toEqual(200);
+  });
 });
 
 // stat
@@ -142,23 +151,67 @@ describe('stat request', () => {
     const response = await fetch(`${url}/notfile?cmd=stat`);
     expect(response.status).toEqual(404);
   });
+
+  it('should support various UTF-8 characters in path', async () => {
+    const response = await fetch(`${url}/directory 目录 каталог/file 文件 файл?cmd=stat`);
+    expect(response.status).toEqual(200);
+  });
 });
 
 // writeFile
 
 describe('writeFile request', () => {
-  it('should write files correctly', async () => {
-    const response = await fetch(`${url}/newdirectory/newfile?cmd=writeFile`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ data: 'new data' }),
-      });
-    const newdata = await fs.readFile(resolveWithRoot('newdirectory/newfile'), 'utf-8');
+  const textDecoder = new TextDecoder();
+
+  it('should write strings to files correctly', async () => {
+    const testData = 'new data';
+    const testFilename = 'newfile-string';
+    const response = await fetch(`${url}/newdirectory/${testFilename}?cmd=writeFile`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: testData,
+    });
+    const newdata = await fs.readFile(resolveWithRoot(`newdirectory/${testFilename}`), 'utf-8');
     expect(response.status).toEqual(200);
-    expect(newdata).toEqual('new data');
+    expect(newdata).toEqual(testData);
+  });
+
+  it('should write TypedArrays to files correctly', async () => {
+    const testData = new Uint8Array([84, 121, 112, 101, 100, 65, 114, 114, 97, 121]);
+    const testFilename = 'newfile-typedarray';
+    const response = await fetch(`${url}/newdirectory/${testFilename}?cmd=writeFile`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: textDecoder.decode(testData),
+    });
+    const newdata = await fs.readFile(resolveWithRoot(`newdirectory/${testFilename}`));
+    expect(response.status).toEqual(200);
+    expect(newdata.buffer).toEqual(testData.buffer);
+  });
+
+  it('should write DataViews to files correctly', async () => {
+    const testData = new Uint8Array([68, 97, 116, 97, 86, 105, 101, 119]).buffer;
+    const testFilename = 'newfile-dataview';
+    const response = await fetch(`${url}/newdirectory/${testFilename}?cmd=writeFile`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: new DataView(testData),
+    });
+    const newdata = await fs.readFile(resolveWithRoot(`newdirectory/${testFilename}`));
+    expect(response.status).toEqual(200);
+    expect(newdata.buffer).toEqual(testData);
+  });
+
+  it('should support various UTF-8 characters in path', async () => {
+    const testFilename = 'new file 文件 файл';
+    const response = await fetch(`${url}/newdirectory/${testFilename}?cmd=writeFile`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: '',
+    });
+    const statPromise = fs.stat(resolveWithRoot(`newdirectory/${testFilename}`));
+    expect(response.status).toEqual(200);
+    await expect(statPromise).resolves.toBeTruthy();
   });
 });
 
@@ -190,6 +243,15 @@ describe('rm request', () => {
     try { await fs.mkdir('./__tests__/assets/autodirectory'); } catch (err) { /**/ }
     const response = await fetch(`${url}/autodirectory?cmd=rm&recursive=true`, { method: 'DELETE' });
     const statPromise = fs.stat('./__tests__/assets/autodirectory');
+    expect(response.status).toEqual(200);
+    await expect(statPromise).rejects.toBeTruthy();
+  });
+
+  it('should support various UTF-8 characters in path', async () => {
+    const testFilename = 'auto file 文件 файл';
+    try { await fs.writeFile(resolve(resolveWithRoot(testFilename)), ''); } catch (err) { /**/ }
+    const response = await fetch(`${url}/${testFilename}?cmd=rm`, { method: 'DELETE' });
+    const statPromise = fs.stat(resolveWithRoot(testFilename));
     expect(response.status).toEqual(200);
     await expect(statPromise).rejects.toBeTruthy();
   });

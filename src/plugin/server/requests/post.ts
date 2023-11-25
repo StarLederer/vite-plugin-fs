@@ -19,7 +19,7 @@ export default function createRoutes(resolvePath: (path: string) => string): Rou
 
     let path;
     try {
-      path = resolvePath(ctx.path);
+      path = resolvePath(decodeURIComponent(ctx.path));
     } catch (err) {
       if (isNodeError(err)) {
         ctx.status = 403;
@@ -31,8 +31,7 @@ export default function createRoutes(resolvePath: (path: string) => string): Rou
     if (ctx.query.cmd) {
       if (ctx.query.cmd === 'writeFile') {
         const dir = dirname(path);
-        const bdy = ctx.request.body as { data: '' };
-        const { data } = bdy;
+        const data = ctx.request.body as string;
 
         try {
           try {

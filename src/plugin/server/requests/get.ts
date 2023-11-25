@@ -66,7 +66,7 @@ export default function createRoutes(resolvePath: (path: string) => string): Rou
 
     let path;
     try {
-      path = resolvePath(ctx.path);
+      path = resolvePath(decodeURIComponent(ctx.path));
     } catch (err) {
       if (isNodeError(err)) {
         ctx.status = 403;
