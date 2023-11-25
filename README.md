@@ -7,9 +7,10 @@
 [libera-src]: https://img.shields.io/badge/libera-manifesto-lightgrey.svg
 [libera-href]: https://liberamanifesto.com
 
-[issue-tracker]: https://github.com/HermanLederer/vite-plugin-fs/issues
-[show-n-tell]: https://github.com/HermanLederer/vite-plugin-fs/discussions/categories/show-and-tell
-[github]: https://github.com/HermanLederer/vite-plugin-fs/tree/feature/beta-readme
+[issue-tracker]: https://github.com/StarLederer/vite-plugin-fs/issues
+[show-n-tell]: https://github.com/StarLederer/vite-plugin-fs/discussions/categories/show-and-tell
+[github]: https://github.com/StarLederer/vite-plugin-fs
+[changelog]: https://github.com/StarLederer/vite-plugin-fs/tree/master/CHANGELOG.md
 
 # [vite-plugin-fs](https://npmjs.com/package/vite-plugin-fs)
 
@@ -20,7 +21,7 @@
 
 Interact with fs from the browser in dev mode.
 
-> **News:** v1.0.0 has been released after nearly 2 years of preview! The original release criteria were not met completely but the plugin has proven itself over this time in other ways, and it is about to receive new and exciting features that would fit a lot better in a version bump. Thank you for using vite-plugin-fs, and see you in v1.1.0!
+> **News:** v1.1.0 is out and v2.0.0 is already in the works! See [changelog][changelog] for updates since v1.0.0 and keep and eye on the [issue tracker][issue-tracker] for future improvement plans.
 
 ## What's supported by the relay server
 
